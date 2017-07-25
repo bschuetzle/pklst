@@ -9,7 +9,7 @@ var Sequelize = require('sequelize')
 var sql = require("mssql");
 
 // import objects from other directories
-// var db = require('./models');
+var db = require('./models');  // connect to the sql server database
 // var controllers = require('./controllers');
 // var conn = require('./models/db.js');
 
