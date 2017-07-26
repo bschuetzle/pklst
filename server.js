@@ -40,6 +40,12 @@ app.get('/', function homepage(req, res) {
  // "GET" api for single order by order number
  app.get('/api/orders/:order_num', controllers.orders.find);
 
+ // "GET" api for all items
+ app.get('/api/items', controllers.items.index);
+
+ // "GET" api for all ordered items
+ app.get('/api/ordered_items/:order_num', controllers.picklists.index);
+ 
 
 /**********
  * SERVER *

@@ -17,9 +17,10 @@ $(document).on("keypress", ".order-search-input", function(e) {
 
 $(document).on("click", ".order-search-button", function(e) {
   orderNumber = $(".order-search-input").val();
+  $(".order-search-msg").empty();
   console.log("Find button clicked with order number: " + orderNumber);
   if (orderNumber == "") {
-    $("body").append("Please enter an order number");
+    $(".order-search-msg").append("Please enter an order number");
   } else {
 
     $.ajax({
@@ -27,13 +28,13 @@ $(document).on("click", ".order-search-button", function(e) {
       url: '/api/orders/' + orderNumber,
       success: function(json) {
         if (json.length != 0) {
-          $("body").append("Order was found, customer is: " + json[0].customerName);
+          $(".order-search-msg").append("Order was found, customer is: " + json[0].customerName);
         } else {
-          $("body").append("Order number was not found");
+          $(".order-search-msg").append("Order number was not found");
         }
       },
       error: function() {
-        $("body").append("Error: some other error");
+        $(".order-search-msg").append("Error: some other error");
       }
     });
 
