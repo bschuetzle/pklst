@@ -2,8 +2,6 @@ $(document).ready(function() {
 
   console.log("app.js document is ready")
 
-  // displayOrders()
-
 });
 
 
@@ -21,15 +19,18 @@ $(document).on("click", ".order-search-button", function(e) {
   console.log("Find button clicked with order number: " + orderNumber);
   if (orderNumber == "") {
     $(".order-search-msg").append("Please enter an order number");
-  } else {
+  }
+  else {
 
     $.ajax({
       method: 'GET',
       url: '/api/orders/' + orderNumber,
       success: function(json) {
         if (json.length != 0) {
-          $(".order-search-msg").append("Order was found, customer is: " + json[0].customerName);
-        } else {
+          // $(".order-search-msg").append("Order was found, customer is: " + json[0].customerName);
+          displayPickList(orderNumber);
+        }
+        else {
           $(".order-search-msg").append("Order number was not found");
         }
       },
@@ -42,21 +43,41 @@ $(document).on("click", ".order-search-button", function(e) {
 
 });
 
+function displayPickList(orderNumber) {
 
-function displayOrders() {
   $.ajax({
     method: 'GET',
-    url: '/api/orders',
+    url: '/api/ordered_items/' + orderNumber,
     success: function(json) {
 
+      var htmlHeader = `
+        <h1>PKLST</h1>
+
+        <div class="itme-search-cont">
+          <label for="item search">Item Number</label>
+          <input type="text" name="item search" class="item-search-input" placeholder="scan item number">
+          <button type="button" class="item-search-button">Find</button>
+        </div>
+
+        <div class="item-search-msg">
+
+        </div>
+      `
+
+      var htmlList = "";
       json.forEach(function(element, index) {
-        var appendStr = `<li><a href="#" class="project-dropdown-items" data-id="${element.id}">${element.orderNumber}</a></li>`;
-        $("body").append(appendStr);
+        htmlList = htmlList + `<li class="picklist-item" data-id="${element.id}">${element.itemNumber} - ${element.description}</li>`;
       });
+
+      $("body").empty();
+      $("body").append(htmlHeader + htmlList);
+
 
     },
     error: function() {
-      console.log("error getting orders");
+      console.log("error getting data");
     }
   });
+
+
 }
