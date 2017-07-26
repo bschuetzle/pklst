@@ -52,7 +52,7 @@ app.get('/checkbox', function homepage(req, res) {
  app.get('/api/ordered_items/:order_num', controllers.picklists.index);
 
  // "PUT" api for single pick list item
- app.put('/api/picked_items/:order_id/:item_id', controllers.picklists.update);
+ app.put('/api/picked_items/:order_id/:item_id/:picked_qty', controllers.picklists.update);
 
 
 /**********

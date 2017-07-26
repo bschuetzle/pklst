@@ -82,11 +82,11 @@ function displayPickList(orderNumber) {
       var htmlList = "";
       json.forEach(function(element, index) {
         htmlList = htmlList + `
-          <p class="picklist-item" data-id="${element.itemNumber}">
-            <div class="picklist-item item-number">${element.itemNumber}</div>
-            <div class="picklist-item description">${element.description}</div>
-            <div class="picklist-item orderedQty">${element.orderedQty}</div>
-            <div class="picklist-item pickedQty">${element.pickedQty}</div>
+          <p class="picklist-item" data-id="${element.itemID}">
+            <div class="picklist-item item-number" data-id="${element.itemID}">${element.itemNumber}</div>
+            <div class="picklist-item description" data-id="${element.itemID}">${element.description}</div>
+            <div class="picklist-item orderedQty" data-id="${element.itemID}">${element.orderedQty}</div>
+            <div class="picklist-item pickedQty" data-id="${element.itemID}">${element.pickedQty}</div>
           </p>
         `;
       });
@@ -126,7 +126,7 @@ function displayPickList(orderNumber) {
       $(".item-search-msg").append("Error: this item has already been fully picked and packed - do not pack it!");
     } else {
       $(".item-search-msg").append("this is valid, we will pick it and update the quantity");
-      pickItem(validation.orderID, validation.itemID);
+      pickItem(validation.orderID, validation.itemID, validation.pickedQty + 1);
     }
   });
 
@@ -147,20 +147,42 @@ function displayPickList(orderNumber) {
     return results;
   }
 
-  function pickItem(orderID, itemID) {
+  function pickItem(orderID, itemID, pickedQty) {
 
     $.ajax({
       method: 'PUT',
-      url: `/api/picked_items/${orderID}/${itemID}`,
+      url: `/api/picked_items/${orderID}/${itemID}/${pickedQty}`,
       success: function(json) {
         console.log("Success updating pick list");
         console.log(json);
+        updateCachedPickList(itemID, pickedQty);
+        updateDisplayedPickList(itemID, pickedQty);
       },
       error: function() {
         console.log("Error updating pick list");
         console.log(json);
       }
     });
+
+  }
+
+  function updateCachedPickList(itemID, pickedQty) {
+
+    pickList.forEach(function(element, index) {
+      // console.log("Item Number: " + element.itemNumber);
+      if (element.itemID == itemID) {
+        pickList[index].pickedQty = pickedQty;
+      }
+    });
+
+    console.log(pickList);
+
+  }
+
+  function updateDisplayedPickList(itemID, pickedQty) {
+
+    var $qtyEl = $(`.picklist-item.pickedQty[data-id='${itemID}']`);
+    $qtyEl.text(pickedQty);
 
   }
 

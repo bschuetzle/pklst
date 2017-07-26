@@ -35,9 +35,10 @@ function update(req, res) {
 
   orderID = req.params.order_id;
   itemID = req.params.item_id;
+  pickedQty = req.params.picked_qty;
   // var updatedItem = req.body;
   db.OrderedItem.update({
-      pickedQty: 1,
+      pickedQty: pickedQty,
     }, {
       where: {
         orderID: orderID,
