@@ -7,6 +7,13 @@ $(document).ready(function() {
 });
 
 
+// if the enter key is pressed when the focus is on the search input, perform the search
+$(document).on("keypress", ".order-search-input", function(e) {
+  if (e.keyCode==13) {
+    $(".order-search-button").click();
+  }
+});
+
 
 $(document).on("click", ".order-search-button", function(e) {
   orderNumber = $(".order-search-input").val();
@@ -14,7 +21,7 @@ $(document).on("click", ".order-search-button", function(e) {
   if (orderNumber == "") {
     $("body").append("Please enter an order number");
   } else {
-    
+
     $.ajax({
       method: 'GET',
       url: '/api/orders/' + orderNumber,
