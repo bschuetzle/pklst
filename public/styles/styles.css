@@ -1,0 +1,9 @@
+
+.picklist-item {
+  display: inline-block;
+  margin-right: 30px;
+}
+
+.picklist-order {
+  margin: 30px 0;
+}

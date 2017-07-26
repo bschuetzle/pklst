@@ -53,10 +53,10 @@ function displayPickList(orderNumber) {
       var htmlHeader = `
         <h1>PKLST</h1>
 
-        <div class="itme-search-cont">
+        <div class="item-search-cont">
           <label for="item search">Item Number</label>
           <input type="text" name="item search" class="item-search-input" placeholder="scan item number">
-          <button type="button" class="item-search-button">Find</button>
+          <button type="button" class="item-search-button">Pack</button>
         </div>
 
         <div class="item-search-msg">
@@ -64,13 +64,31 @@ function displayPickList(orderNumber) {
         </div>
       `
 
+      var htmlMsg = `
+        <div class="item-search-msg">
+        </div>
+      `
+
+      var htmlOrder = `
+        <div class="picklist-order">
+          Order Number: <div class="picklist-order-number">${orderNumber}</div>
+        </div>
+      `
+
       var htmlList = "";
       json.forEach(function(element, index) {
-        htmlList = htmlList + `<li class="picklist-item" data-id="${element.id}">${element.itemNumber} - ${element.description}</li>`;
+        htmlList = htmlList + `
+          <p class="picklist-item" data-id="${element.itemNumber}">
+            <div class="picklist-item item-number">${element.itemNumber}</div>
+            <div class="picklist-item description">${element.description}</div>
+            <div class="picklist-item orderedQty">${element.orderedQty}</div>
+            <div class="picklist-item pickedQty">${element.pickedQty}</div>
+          </p>
+        `;
       });
 
       $("body").empty();
-      $("body").append(htmlHeader + htmlList);
+      $("body").append(htmlHeader + htmlMsg + htmlOrder + htmlList);
 
 
     },
@@ -78,6 +96,21 @@ function displayPickList(orderNumber) {
       console.log("error getting data");
     }
   });
+
+
+  // if the enter key is pressed when the focus is on the item number input, automatically click the pack button
+  $(document).on("keypress", ".item-search-input", function(e) {
+    if (e.keyCode==13) {
+      $(".item-search-button").click();
+    }
+  });
+
+  $(document).on("click", ".item-search-button", function(e) {
+    orderNumber = $(".picklist-order-number").text();
+    itemNumber = $(".item-search-input").val();
+    console.log("Pack button clicked with order number: " + orderNumber + ", item number: " + itemNumber);
+  });
+
 
 
 }

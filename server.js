@@ -29,6 +29,11 @@ app.get('/', function homepage(req, res) {
    res.sendFile(__dirname + '/views/index.html');
 });
 
+// temp checkbox testing
+app.get('/checkbox', function homepage(req, res) {
+   res.sendFile(__dirname + '/views/checkbox.html');
+});
+
 
 /**************
  * API ROUTES *
@@ -45,7 +50,7 @@ app.get('/', function homepage(req, res) {
 
  // "GET" api for all ordered items
  app.get('/api/ordered_items/:order_num', controllers.picklists.index);
- 
+
 
 /**********
  * SERVER *
