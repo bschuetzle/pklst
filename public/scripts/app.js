@@ -1,3 +1,7 @@
+
+var pickList;
+
+
 $(document).ready(function() {
 
   console.log("app.js document is ready")
@@ -50,6 +54,9 @@ function displayPickList(orderNumber) {
     url: '/api/ordered_items/' + orderNumber,
     success: function(json) {
 
+      pickList = json;
+
+
       var htmlHeader = `
         <h1>PKLST</h1>
 
@@ -57,10 +64,6 @@ function displayPickList(orderNumber) {
           <label for="item search">Item Number</label>
           <input type="text" name="item search" class="item-search-input" placeholder="scan item number">
           <button type="button" class="item-search-button">Pack</button>
-        </div>
-
-        <div class="item-search-msg">
-
         </div>
       `
 
@@ -109,8 +112,35 @@ function displayPickList(orderNumber) {
     orderNumber = $(".picklist-order-number").text();
     itemNumber = $(".item-search-input").val();
     console.log("Pack button clicked with order number: " + orderNumber + ", item number: " + itemNumber);
+    console.log(pickList);
+    var validation = findPickListItem(itemNumber);
+    console.log(validation);
+    console.log("Found? " + validation.found);
+    $(".item-search-msg").empty();
+    if (itemNumber == "") {
+      $(".item-search-msg").append("Error: please enter an item number");
+    } else if (!validation.found) {
+      $(".item-search-msg").append("Error: this item is not in this pick list - do not pack it!");
+    } else if (validation.pickedQty == validation.orderedQty) {
+      $(".item-search-msg").append("Error: this item has already been fully picked and packed - do not pack it!");
+    } else {
+      $(".item-search-msg").append("this is valid, we will pick it and update the quantity");
+    }
   });
 
-
+  function findPickListItem(itemNumber) {
+    var results = {found: false, itemNumber: "", orderedQty: 0, pickedQty: 0};
+    pickList.forEach(function(element, index) {
+      // console.log("Item Number: " + element.itemNumber);
+      if (element.itemNumber == itemNumber) {
+        results["found"] = true;
+        results["itemNumber"] = element.itemNumber;
+        results["orderedQty"] = element.orderedQty;
+        results["pickedQty"] = element.pickedQty;
+        // return results;
+      }
+    });
+    return results;
+  }
 
 }
