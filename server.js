@@ -10,7 +10,7 @@ var sql = require("mssql");
 
 // import objects from other directories
 var db = require('./models');  // connect to the sql server database
-// var controllers = require('./controllers');
+var controllers = require('./controllers');
 // var conn = require('./models/db.js');
 
 // set express app
@@ -34,6 +34,8 @@ app.get('/', function homepage(req, res) {
  * API ROUTES *
  **************/
 
+ // "GET" api for all orders
+ app.get('/api/orders', controllers.orders.index);
 
 
 /**********
