@@ -157,6 +157,7 @@ function displayPickList(orderNumber) {
         console.log(json);
         updateCachedPickList(itemID, pickedQty);
         updateDisplayedPickList(itemID, pickedQty);
+        returnFocusToItemNumber();
       },
       error: function() {
         console.log("Error updating pick list");
@@ -184,6 +185,11 @@ function displayPickList(orderNumber) {
     var $qtyEl = $(`.picklist-item.pickedQty[data-id='${itemID}']`);
     $qtyEl.text(pickedQty);
 
+  }
+
+  function returnFocusToItemNumber() {
+    $(".item-search-input").val("");
+    $(".item-search-input").focus();
   }
 
 
