@@ -73,6 +73,11 @@ function displayPickList(orderNumber) {
         </div>
       `
 
+      var htmlPickStatus = `
+        <div class="pick-status">
+        </div>
+      `
+
       var htmlOrder = `
         <div class="picklist-order">
           Order Number: <div class="picklist-order-number">${orderNumber}</div>
@@ -92,8 +97,9 @@ function displayPickList(orderNumber) {
       });
 
       $("body").empty();
-      $("body").append(htmlHeader + htmlMsg + htmlOrder + htmlList);
+      $("body").append(htmlHeader + htmlMsg + htmlPickStatus + htmlOrder + htmlList);
 
+      displayPickStatus();
 
     },
     error: function() {
@@ -158,6 +164,7 @@ function displayPickList(orderNumber) {
         updateCachedPickList(itemID, pickedQty);
         updateDisplayedPickList(itemID, pickedQty);
         returnFocusToItemNumber();
+        displayPickStatus();
       },
       error: function() {
         console.log("Error updating pick list");
@@ -192,6 +199,22 @@ function displayPickList(orderNumber) {
     $(".item-search-input").focus();
   }
 
-
+  function displayPickStatus() {
+    var totalOrderedQty = 0;
+    var totalPickedQty = 0;
+    var status = "";
+    pickList.forEach(function(element, index) {
+      totalOrderedQty += element.orderedQty;
+      totalPickedQty += element.pickedQty;
+    });
+    if (totalPickedQty == 0) {
+      status = "Not Started";
+    } else if (totalPickedQty < totalOrderedQty) {
+      status = "In Progress";
+    } else if (totalPickedQty == totalOrderedQty) {
+      status = "Complete";
+    }
+    $(".pick-status").text(status);
+  }
 
 }
