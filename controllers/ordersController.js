@@ -11,6 +11,23 @@ function index(req, res) {
 
 }
 
+
+function find(req, res) {
+
+  orderNumber = req.params.order_num;
+  db.Order.findAll({
+    where: {
+      orderNumber: orderNumber
+    }
+    })
+    .then(order => {
+      res.json(order)
+    })
+
+}
+
+
 module.exports = {
-  index: index
+  index: index,
+  find: find
 };

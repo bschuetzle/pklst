@@ -37,6 +37,9 @@ app.get('/', function homepage(req, res) {
  // "GET" api for all orders
  app.get('/api/orders', controllers.orders.index);
 
+ // "GET" api for single order by order number
+ app.get('/api/orders/:order_num', controllers.orders.find);
+
 
 /**********
  * SERVER *
