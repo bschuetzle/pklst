@@ -55,7 +55,8 @@ function displayPickList(orderNumber) {
     success: function(json) {
 
       pickList = json;
-
+      console.log("Pick List:");
+      console.log(pickList);
 
       var htmlHeader = `
         <h1>PKLST</h1>
@@ -125,22 +126,44 @@ function displayPickList(orderNumber) {
       $(".item-search-msg").append("Error: this item has already been fully picked and packed - do not pack it!");
     } else {
       $(".item-search-msg").append("this is valid, we will pick it and update the quantity");
+      pickItem(validation.orderID, validation.itemID);
     }
   });
 
   function findPickListItem(itemNumber) {
-    var results = {found: false, itemNumber: "", orderedQty: 0, pickedQty: 0};
+    var results = {found: false, itemNumber: "", orderID: 0, itemID: 0, orderedQty: 0, pickedQty: 0};
     pickList.forEach(function(element, index) {
       // console.log("Item Number: " + element.itemNumber);
       if (element.itemNumber == itemNumber) {
         results["found"] = true;
         results["itemNumber"] = element.itemNumber;
         results["orderedQty"] = element.orderedQty;
+        results["orderID"] = element.orderID;
+        results["itemID"] = element.itemID;
         results["pickedQty"] = element.pickedQty;
         // return results;
       }
     });
     return results;
   }
+
+  function pickItem(orderID, itemID) {
+
+    $.ajax({
+      method: 'PUT',
+      url: `/api/picked_items/${orderID}/${itemID}`,
+      success: function(json) {
+        console.log("Success updating pick list");
+        console.log(json);
+      },
+      error: function() {
+        console.log("Error updating pick list");
+        console.log(json);
+      }
+    });
+
+  }
+
+
 
 }

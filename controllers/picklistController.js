@@ -7,8 +7,10 @@ function index(req, res) {
   orderNumber = req.params.order_num;
   var queryString = `
     SELECT
+      T1.id as orderID,
     	T1.orderNumber,
     	T1.customerName,
+      T3.id as itemID,
     	T3.itemNumber,
     	T3.description,
     	T2.itemType,
@@ -27,9 +29,31 @@ function index(req, res) {
       res.send(picklist)
     })
 
+}
+
+function update(req, res) {
+
+  orderID = req.params.order_id;
+  itemID = req.params.item_id;
+  // var updatedItem = req.body;
+  db.OrderedItem.update({
+      pickedQty: 1,
+    }, {
+      where: {
+        orderID: orderID,
+        itemID: itemID
+      }
+    }
+  )
+  .then(updatedItem => {
+    res.send(updatedItem)
+  })
 
 }
 
+
+
 module.exports = {
-  index: index
+  index: index,
+  update: update
 };
