@@ -9,14 +9,18 @@
   <title>PKLST</title>
 
   <!-- STYLESHEETS -->
-  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <!-- <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"> -->
+  <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.4.1/css/foundation.min.css" integrity="sha256-itWEYdFWzZPBG78bJOOiQIn06QCgN/F0wMDcC4nOhxY=" crossorigin="anonymous" /> -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.1/css/materialize.min.css">
+  <link rel='stylesheet' href="https://fonts.googleapis.com/css?family=Khula|Open+Sans|Roboto|Lato|Raleway|Material+Icons">
   <link rel="stylesheet" href="/styles/styles.css">
-  <link rel='stylesheet' href="https://fonts.googleapis.com/css?family=Khula|Open+Sans|Roboto|Lato|Raleway">
 
   <!-- VENDOR SCRIPTS -->
   <script src="//ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-  <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.7.0/moment.min.js" type="text/javascript"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.1/js/materialize.min.js"></script>
+  <!-- <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script> -->
+  <!-- <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.7.0/moment.min.js" type="text/javascript"></script> -->
+  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.4.1/js/foundation.min.js" integrity="sha256-Nd2xznOkrE9HkrAMi4xWy/hXkQraXioBg9iYsBrcFrs=" crossorigin="anonymous"></script> -->
 
   <!-- APPLICATION SCRIPTS -->
   <script src="/scripts/app.js"></script>
@@ -25,17 +29,43 @@
 
   <body>
 
-    <h1>PKLST</h1>
-
-    <div class="order-search-cont">
-      <label for="order search">Order Number</label>
-      <input type="text" name="order search" class="order-search-input" placeholder="scan order number">
-      <button type="button" class="order-search-button">Find</button>
+    <div class="navbar-fixed">
+      <nav>
+        <div class="nav-wrapper blue-grey darken-3">
+          <a class="brand-logo">PKLST</a>
+        </div>
+      </nav>
     </div>
 
-    <div class="order-search-msg">
-      
+
+    <div class="container order-search-container">
+
+      <div class="row">
+        <div class="col s6 offset-s3 order-search-label">
+          Order Number
+        </div>
+        <div class="col s5 offset-s3">
+          <div class="input-field">
+            <input type="text" class="order-search-input" placeholder="scan order number">
+          </div>
+        </div>
+        <div class="col s1">
+          <button type="button" class="btn waves-effect grey darken-1 order-search-button">
+            <i class="large material-icons center order-search-icon">search</i>
+          </button>
+        </div>
+        <div class="col s6 offset-s3">
+          <div class="alert-container">
+            <div data-closable class="callout alert-callout-subtle alert">
+              <strong>Error!</strong>  Alert Alert
+            </div>
+          </div>
+        </div>
+      </div>
+
+
     </div>
+
 
   </body>
 

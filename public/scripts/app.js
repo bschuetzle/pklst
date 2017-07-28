@@ -4,10 +4,20 @@ var pickList;
 
 $(document).ready(function() {
 
-  console.log("app.js document is ready")
+  console.log("app.js document is ready");
+
+  setFocusOnOrderInput();
 
 });
 
+
+function setFocusOnOrderInput() {
+  $(".order-search-input").focus();
+}
+
+function setFocusOnItemInput() {
+  $(".item-search-input").focus();
+}
 
 // if the enter key is pressed when the focus is on the search input, perform the search
 $(document).on("keypress", ".order-search-input", function(e) {
@@ -22,7 +32,12 @@ $(document).on("click", ".order-search-button", function(e) {
   $(".order-search-msg").empty();
   console.log("Find button clicked with order number: " + orderNumber);
   if (orderNumber == "") {
-    $(".order-search-msg").append("Please enter an order number");
+    // $(".order-search-msg").append("Please enter an order number");
+    $(".alert-callout-subtle").removeClass("alert warning");
+    $(".alert-callout-subtle").addClass("warning");
+    $(".alert-callout-subtle.warning").html(`<strong>Oops!</strong> Please enter an order number.`);
+    $(".alert-callout-subtle.warning").css("visibility", "visible");
+    // console.log($(".alert-callout-subtle.alert").text());
   }
   else {
 
@@ -35,7 +50,10 @@ $(document).on("click", ".order-search-button", function(e) {
           displayPickList(orderNumber);
         }
         else {
-          $(".order-search-msg").append("Order number was not found");
+          $(".alert-callout-subtle").removeClass("alert warning");
+          $(".alert-callout-subtle").addClass("alert");
+          $(".alert-callout-subtle.alert").html(`<strong>Error:</strong> The order number '${orderNumber}' could not be found.`);
+          $(".alert-callout-subtle.alert").css("visibility", "visible");
         }
       },
       error: function() {
@@ -59,13 +77,38 @@ function displayPickList(orderNumber) {
       console.log(pickList);
 
       var htmlHeader = `
-        <h1>PKLST</h1>
-
-        <div class="item-search-cont">
-          <label for="item search">Item Number</label>
-          <input type="text" name="item search" class="item-search-input" placeholder="scan item number">
-          <button type="button" class="item-search-button">Pack</button>
+        <div class="navbar-fixed">
+          <nav>
+            <div class="nav-wrapper blue-grey darken-3">
+              <a class="brand-logo">PKLST</a>
+            </div>
+          </nav>
         </div>
+
+        <div class="container item-search-container">
+
+          <div class="row">
+
+            <div class="col s6 offset-s3 order-search-label">
+              Item Number
+            </div>
+
+            <div class="col s3 offset-s3">
+              <div class="input-field">
+                <input type="text" class="item-search-input" placeholder="scan item number">
+              </div>
+            </div>
+
+            <div class="col s2">
+              <button type="button" class="btn waves-effect grey darken-1 item-search-button">Pack
+                <i class="large material-icons right" item-search-icon>file_download</i>
+              </button>
+            </div>
+
+          </div>
+
+        </div>
+
       `
 
       var htmlMsg = `
@@ -84,27 +127,71 @@ function displayPickList(orderNumber) {
         </div>
       `
 
-      var htmlList = "";
+      // var htmlList = "";
+      // json.forEach(function(element, index) {
+      //   htmlList = htmlList + `
+      //     <p class="picklist-item" data-id="${element.itemID}">
+      //       <div class="picklist-item item-number" data-id="${element.itemID}">${element.itemNumber}</div>
+      //       <div class="picklist-item description" data-id="${element.itemID}">${element.description}</div>
+      //       <div class="picklist-item orderedQty" data-id="${element.itemID}">${element.orderedQty}</div>
+      //       <div class="picklist-item pickedQty" data-id="${element.itemID}">${element.pickedQty}</div>
+      //     </p>
+      //   `;
+      // });
+
+
+      var htmlList = `
+      <div class="container pick-list-container">
+        <div class="row">
+          <div class="col s12">
+            <table class="striped">
+              <thead>
+                <tr>
+                  <th>Status</th>
+                  <th>Item Number</th>
+                  <th>Description</th>
+                  <th class="centered">Ordered Qty</th>
+                  <th>Picked Qty</th>
+                </tr>
+              </thead>
+
+              <tbody>
+      `
       json.forEach(function(element, index) {
         htmlList = htmlList + `
-          <p class="picklist-item" data-id="${element.itemID}">
-            <div class="picklist-item item-number" data-id="${element.itemID}">${element.itemNumber}</div>
-            <div class="picklist-item description" data-id="${element.itemID}">${element.description}</div>
-            <div class="picklist-item orderedQty" data-id="${element.itemID}">${element.orderedQty}</div>
-            <div class="picklist-item pickedQty" data-id="${element.itemID}">${element.pickedQty}</div>
-          </p>
-        `;
+          <tr class="picklist-row" data-id="${element.itemID}">
+            <td class="picklist-item status" data-id="${element.itemID}"><i class="small material-icons center pick-status-icon data-id="${element.itemID}"">error_outline</i></td>
+            <td class="picklist-item item-number" data-id="${element.itemID}">${element.itemNumber}</td>
+            <td class="picklist-item description" data-id="${element.itemID}">${element.description}</td>
+            <td class="picklist-item orderedQty" data-id="${element.itemID}">${element.orderedQty}</td>
+            <td class="picklist-item pickedQty" data-id="${element.itemID}">${element.pickedQty}</td>
+          </tr>
+        `
       });
+      htmlList = htmlList + `
+                </tbody>
+              </table>
+            </div>
+          </div>
+      </div>
+      `
 
       $("body").empty();
-      $("body").append(htmlHeader + htmlMsg + htmlPickStatus + htmlOrder + htmlList);
+      $("body").append(htmlHeader + htmlList + htmlMsg + htmlPickStatus + htmlOrder);
 
       displayPickStatus();
+
+      setFocusOnItemInput();
 
     },
     error: function() {
       console.log("error getting data");
     }
+  });
+
+
+  $(document).on("click", ".item-print-button", function(e) {
+    window.print();
   });
 
 
@@ -163,6 +250,7 @@ function displayPickList(orderNumber) {
         console.log(json);
         updateCachedPickList(itemID, pickedQty);
         updateDisplayedPickList(itemID, pickedQty);
+        flashPickedItem(itemID, pickedQty);
         returnFocusToItemNumber();
         displayPickStatus();
       },
@@ -187,12 +275,22 @@ function displayPickList(orderNumber) {
 
   }
 
+
   function updateDisplayedPickList(itemID, pickedQty) {
 
     var $qtyEl = $(`.picklist-item.pickedQty[data-id='${itemID}']`);
     $qtyEl.text(pickedQty);
 
   }
+
+
+  function flashPickedItem(itemID, pickedQty) {
+
+    var $rowEl = $(`.picklist-row[data-id='${itemID}']`);
+    $rowEl.css("color", "green");
+
+  }
+
 
   function returnFocusToItemNumber() {
     $(".item-search-input").val("");
