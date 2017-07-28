@@ -38,10 +38,6 @@ Pick List Page
   margin-top: 50px;
 }
 
-input[type=text]:not(.browser-default) .item-search-input {
-  width: 50%;
-}
-
 .item-search-button {
   height: 47px;
   margin-top: 14px;
@@ -56,6 +52,7 @@ input[type=text]:not(.browser-default) .item-search-input {
 
 .pick-status-icon {
   color: red;
+  /*transition: color 1s ease;*/
 }
 
 tr {
@@ -96,6 +93,26 @@ nav .brand-logo {
   background-color: black;
 }
 
+.fix-test {
+  position: fixed;
+  background-color: white;
+}
+
+.item-search-input {
+  width: 100px;
+}
+
+.pick-list-status {
+  padding: 5px;
+  border: 1px solid grey;
+  text-align: center;
+}
+
+
+/*.table-header-orderedqty {
+  text-align: center;
+}*/
+
 /* ***********
 Foundation CSS
 *********** */
@@ -129,14 +146,18 @@ Foundation CSS
   background: #e6e6e6;
   color: #8a8a8a;
   border-left: 0.3125rem solid #cc4b37;
-  visibility: hidden;
+  margin: 20px 0;
+  visibility: visible;
+  display: none;
 }
 
 .alert-callout-subtle.warning {
   background: #e6e6e6;
   color: #8a8a8a;
   border-left: 0.3125rem solid #ffae00;
-  visibility: hidden;
+  margin: 20px 0;
+  visibility: visible;
+  display: none;
 }
 
 .alert-callout-subtle.primary {

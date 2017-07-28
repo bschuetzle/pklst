@@ -32,12 +32,10 @@ $(document).on("click", ".order-search-button", function(e) {
   $(".order-search-msg").empty();
   console.log("Find button clicked with order number: " + orderNumber);
   if (orderNumber == "") {
-    // $(".order-search-msg").append("Please enter an order number");
     $(".alert-callout-subtle").removeClass("alert warning");
     $(".alert-callout-subtle").addClass("warning");
     $(".alert-callout-subtle.warning").html(`<strong>Oops!</strong> Please enter an order number.`);
-    $(".alert-callout-subtle.warning").css("visibility", "visible");
-    // console.log($(".alert-callout-subtle.alert").text());
+    $(".alert-callout-subtle.warning").css("display", "block");
   }
   else {
 
@@ -53,7 +51,7 @@ $(document).on("click", ".order-search-button", function(e) {
           $(".alert-callout-subtle").removeClass("alert warning");
           $(".alert-callout-subtle").addClass("alert");
           $(".alert-callout-subtle.alert").html(`<strong>Error:</strong> The order number '${orderNumber}' could not be found.`);
-          $(".alert-callout-subtle.alert").css("visibility", "visible");
+          $(".alert-callout-subtle.alert").css("display", "block");
         }
       },
       error: function() {
@@ -85,15 +83,17 @@ function displayPickList(orderNumber) {
           </nav>
         </div>
 
+
+
         <div class="container item-search-container">
 
           <div class="row">
 
-            <div class="col s6 offset-s3 order-search-label">
+            <div class="col s12 order-search-label">
               Item Number
             </div>
 
-            <div class="col s3 offset-s3">
+            <div class="col s3">
               <div class="input-field">
                 <input type="text" class="item-search-input" placeholder="scan item number">
               </div>
@@ -105,20 +105,26 @@ function displayPickList(orderNumber) {
               </button>
             </div>
 
+            <div class="col s5">
+
+            </div>
+
+            <div class="col s2">
+              <div class="pick-list-status">In Process</div>
+            </div>
+
+            <div class="col s12">
+              <div class="alert-container">
+                <div data-closable class="callout alert-callout-subtle alert">
+                  <strong>Error!</strong>  Alert Alert
+                </div>
+              </div>
+            </div>
+
           </div>
 
         </div>
 
-      `
-
-      var htmlMsg = `
-        <div class="item-search-msg">
-        </div>
-      `
-
-      var htmlPickStatus = `
-        <div class="pick-status">
-        </div>
       `
 
       var htmlOrder = `
@@ -126,19 +132,6 @@ function displayPickList(orderNumber) {
           Order Number: <div class="picklist-order-number">${orderNumber}</div>
         </div>
       `
-
-      // var htmlList = "";
-      // json.forEach(function(element, index) {
-      //   htmlList = htmlList + `
-      //     <p class="picklist-item" data-id="${element.itemID}">
-      //       <div class="picklist-item item-number" data-id="${element.itemID}">${element.itemNumber}</div>
-      //       <div class="picklist-item description" data-id="${element.itemID}">${element.description}</div>
-      //       <div class="picklist-item orderedQty" data-id="${element.itemID}">${element.orderedQty}</div>
-      //       <div class="picklist-item pickedQty" data-id="${element.itemID}">${element.pickedQty}</div>
-      //     </p>
-      //   `;
-      // });
-
 
       var htmlList = `
       <div class="container pick-list-container">
@@ -150,8 +143,8 @@ function displayPickList(orderNumber) {
                   <th>Status</th>
                   <th>Item Number</th>
                   <th>Description</th>
-                  <th class="centered">Ordered Qty</th>
-                  <th>Picked Qty</th>
+                  <th style="text-align:center">Ordered Qty</th>
+                  <th style="text-align:center">Picked Qty</th>
                 </tr>
               </thead>
 
@@ -160,14 +153,15 @@ function displayPickList(orderNumber) {
       json.forEach(function(element, index) {
         htmlList = htmlList + `
           <tr class="picklist-row" data-id="${element.itemID}">
-            <td class="picklist-item status" data-id="${element.itemID}"><i class="small material-icons center pick-status-icon data-id="${element.itemID}"">error_outline</i></td>
+            <td class="picklist-item status" data-id="${element.itemID}"><i class="small material-icons center pick-status-icon" data-id="${element.itemID}">error_outline</i></td>
             <td class="picklist-item item-number" data-id="${element.itemID}">${element.itemNumber}</td>
             <td class="picklist-item description" data-id="${element.itemID}">${element.description}</td>
-            <td class="picklist-item orderedQty" data-id="${element.itemID}">${element.orderedQty}</td>
-            <td class="picklist-item pickedQty" data-id="${element.itemID}">${element.pickedQty}</td>
+            <td class="picklist-item orderedQty" style="text-align:center" data-id="${element.itemID}">${element.orderedQty}</td>
+            <td class="picklist-item pickedQty" style="text-align:center" data-id="${element.itemID}">${element.pickedQty}</td>
           </tr>
         `
       });
+
       htmlList = htmlList + `
                 </tbody>
               </table>
@@ -177,7 +171,7 @@ function displayPickList(orderNumber) {
       `
 
       $("body").empty();
-      $("body").append(htmlHeader + htmlList + htmlMsg + htmlPickStatus + htmlOrder);
+      $("body").append(htmlHeader + htmlList + htmlOrder);
 
       displayPickStatus();
 
@@ -212,13 +206,22 @@ function displayPickList(orderNumber) {
     console.log("Found? " + validation.found);
     $(".item-search-msg").empty();
     if (itemNumber == "") {
-      $(".item-search-msg").append("Error: please enter an item number");
+      $(".alert-callout-subtle").removeClass("alert warning");
+      $(".alert-callout-subtle").addClass("warning");
+      $(".alert-callout-subtle.warning").html(`<strong>Oops!</strong> Please enter an item number.`);
+      $(".alert-callout-subtle.warning").css("display", "block");
     } else if (!validation.found) {
-      $(".item-search-msg").append("Error: this item is not in this pick list - do not pack it!");
+      $(".alert-callout-subtle").removeClass("alert warning");
+      $(".alert-callout-subtle").addClass("alert");
+      $(".alert-callout-subtle.alert").html(`<strong>Error:</strong> This item is not part of this order - do not pack it!`);
+      $(".alert-callout-subtle.alert").css("display", "block");
     } else if (validation.pickedQty == validation.orderedQty) {
-      $(".item-search-msg").append("Error: this item has already been fully picked and packed - do not pack it!");
+      $(".alert-callout-subtle").removeClass("alert warning");
+      $(".alert-callout-subtle").addClass("alert");
+      $(".alert-callout-subtle.alert").html(`<strong>Error:</strong> This item has already been fully picked and packed - do not pack it!`);
+      $(".alert-callout-subtle.alert").css("display", "block");
     } else {
-      $(".item-search-msg").append("this is valid, we will pick it and update the quantity");
+      $(".alert-callout-subtle.alert").css("display", "none");
       pickItem(validation.orderID, validation.itemID, validation.pickedQty + 1);
     }
   });
@@ -287,7 +290,10 @@ function displayPickList(orderNumber) {
   function flashPickedItem(itemID, pickedQty) {
 
     var $rowEl = $(`.picklist-row[data-id='${itemID}']`);
+    var $iconEl = $(`.pick-status-icon[data-id='${itemID}']`);
     $rowEl.css("color", "green");
+    $iconEl.text("check_circle");
+    $iconEl.css("color", "green");
 
   }
 
@@ -307,12 +313,16 @@ function displayPickList(orderNumber) {
     });
     if (totalPickedQty == 0) {
       status = "Not Started";
+      $(".pick-list-status").css("background-color", "red");
     } else if (totalPickedQty < totalOrderedQty) {
       status = "In Progress";
+      $(".pick-list-status").css("background-color", "yellow");
     } else if (totalPickedQty == totalOrderedQty) {
       status = "Complete";
+      $(".pick-list-status").css("background-color", "green");
     }
-    $(".pick-status").text(status);
+    $(".pick-list-status").text(status);
+
   }
 
 }
