@@ -84,9 +84,7 @@ function displayPickList(orderNumber) {
         </div>
 
 
-
         <div class="container item-search-container">
-
           <div class="row">
 
             <div class="col s12 order-search-label">
@@ -106,7 +104,6 @@ function displayPickList(orderNumber) {
             </div>
 
             <div class="col s5">
-
             </div>
 
             <div class="col s2">
@@ -127,20 +124,14 @@ function displayPickList(orderNumber) {
 
       `
 
-      var htmlOrder = `
-        <div class="picklist-order">
-          Order Number: <div class="picklist-order-number">${orderNumber}</div>
-        </div>
-      `
-
       var htmlList = `
       <div class="container pick-list-container">
         <div class="row">
           <div class="col s12">
-            <table class="striped">
+            <table class="highlight bordered">
               <thead>
                 <tr>
-                  <th>Status</th>
+                  <th style="text-align:center">Status</th>
                   <th>Item Number</th>
                   <th>Description</th>
                   <th style="text-align:center">Ordered Qty</th>
@@ -151,9 +142,18 @@ function displayPickList(orderNumber) {
               <tbody>
       `
       json.forEach(function(element, index) {
+
+        if (element.pickedQty == element.orderedQty) {
+          var icon = "check_circle";
+          var color = `style="color: green;"`
+        } else {
+          var icon = "error_outline";
+          var color = ""
+        }
+
         htmlList = htmlList + `
           <tr class="picklist-row" data-id="${element.itemID}">
-            <td class="picklist-item status" data-id="${element.itemID}"><i class="small material-icons center pick-status-icon" data-id="${element.itemID}">error_outline</i></td>
+            <td class="picklist-item status" style="text-align:center" data-id="${element.itemID}"><i class="small material-icons center pick-status-icon" data-id="${element.itemID}" ${color}>${icon}</i></td>
             <td class="picklist-item item-number" data-id="${element.itemID}">${element.itemNumber}</td>
             <td class="picklist-item description" data-id="${element.itemID}">${element.description}</td>
             <td class="picklist-item orderedQty" style="text-align:center" data-id="${element.itemID}">${element.orderedQty}</td>
@@ -171,7 +171,7 @@ function displayPickList(orderNumber) {
       `
 
       $("body").empty();
-      $("body").append(htmlHeader + htmlList + htmlOrder);
+      $("body").append(htmlHeader + htmlList);
 
       displayPickStatus();
 
@@ -204,7 +204,6 @@ function displayPickList(orderNumber) {
     var validation = findPickListItem(itemNumber);
     console.log(validation);
     console.log("Found? " + validation.found);
-    $(".item-search-msg").empty();
     if (itemNumber == "") {
       $(".alert-callout-subtle").removeClass("alert warning");
       $(".alert-callout-subtle").addClass("warning");
@@ -222,6 +221,7 @@ function displayPickList(orderNumber) {
       $(".alert-callout-subtle.alert").css("display", "block");
     } else {
       $(".alert-callout-subtle.alert").css("display", "none");
+      $(".alert-callout-subtle.warning").css("display", "none");
       pickItem(validation.orderID, validation.itemID, validation.pickedQty + 1);
     }
   });
@@ -313,13 +313,13 @@ function displayPickList(orderNumber) {
     });
     if (totalPickedQty == 0) {
       status = "Not Started";
-      $(".pick-list-status").css("background-color", "red");
+      $(".pick-list-status").css("background-color", "rgb(255, 198, 179)");
     } else if (totalPickedQty < totalOrderedQty) {
       status = "In Progress";
-      $(".pick-list-status").css("background-color", "yellow");
+      $(".pick-list-status").css("background-color", "rgb(255, 255, 204)");
     } else if (totalPickedQty == totalOrderedQty) {
       status = "Complete";
-      $(".pick-list-status").css("background-color", "green");
+      $(".pick-list-status").css("background-color", "rgb(204, 255, 153)");
     }
     $(".pick-list-status").text(status);
 
