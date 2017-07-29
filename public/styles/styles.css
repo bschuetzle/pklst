@@ -33,13 +33,13 @@ input[type=text]:not(.browser-default) {
 Print Page
 **********/
 
-.pdf-frame {
-  /*margin: 0 auto;
-  text-align: center;*/
+.header-container {
+  margin-top: 100px;
+  text-align: center;
 }
 
 .iframe-container {
-  margin-top: 100px;
+  margin-top: 50px;
   text-align: center;
   width: 100%;
 }

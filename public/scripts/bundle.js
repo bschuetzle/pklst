@@ -46890,8 +46890,9 @@ var pdfUrl          // holds url of pdf e.g. blob:http://localhost:3000/14468788
 $(document).ready(function() {
 
   console.log("document is ready (in app.js)");
+  console.log("retest of browerify/watchify");
 
-  // TODO: render first Page
+  $('.tooltipped').tooltip({delay: 50});
 
   setFocusOnOrderInput();
 
@@ -47039,6 +47040,17 @@ function renderPDFPrintPage(url) {
       </nav>
     </div>
 
+    <div class="container">
+      <div class="row">
+        <div class="col s12 header-container">
+
+          <a class="waves-effect waves-light grey darken-1 btn tooltipped print-button" data-position="top" data-delay="50" data-tooltip="I am a tooltip"><i class="material-icons left">print</i>Print</a>
+          <a class="waves-effect waves-light grey darken-1 btn continue-button"><i class="material-icons left">keyboard_tab</i>Continue</a>
+
+        </div>
+      </div>
+    </div>
+
 
     <div class="container">
       <div class="row">
@@ -47059,6 +47071,38 @@ function renderPDFPrintPage(url) {
   $(".pdf-frame").attr("src", url);
 
 }
+
+
+
+// move from the pick list pdf print page to the image upload page
+$(document).on("click", ".continue-button", function(e) {
+
+  var html = `
+    <div class="navbar-fixed">
+      <nav>
+        <div class="nav-wrapper blue-grey darken-3">
+          <a class="brand-logo">PKLST</a>
+        </div>
+      </nav>
+    </div>
+
+    <div class="container">
+      <div class="row">
+        <div class="col s12 header-container">
+
+          <a class="waves-effect waves-light grey darken-1 btn upload-image-button"><i class="material-icons left">image</i>Select Image File</a>
+
+        </div>
+      </div>
+    </div>
+  `
+
+  $("body").empty();
+  $("body").append(html);
+
+
+});
+
 
 
 function displayPickList(orderNumber) {
