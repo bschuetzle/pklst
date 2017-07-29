@@ -89,6 +89,7 @@ function retrievePickList(orderNumber) {
       // save/cache response data in global variable
       pickList = json;
       findMainProduct(json);
+      generatePDFDoc(json);
       console.log(pickList);
     },
     error: function() {
@@ -110,11 +111,51 @@ function findMainProduct(json) {
 }
 
 
-function generatePDFDoc() {
+function generatePDFDoc(json) {
 
+  var blobStream = require('blob-stream');
 
+  var data = [
+    {itemNumber: '1234-0001', description: 'sdhfkashjfkasjdajsd', orderedQty: 1, pickedQty: 0},
+    {itemNumber: '2342-2114', description: 'gsdjsfljdslgfjjdf', orderedQty: 3, pickedQty: 0},
+    {itemNumber: '4232-2349', description: 'qewrqwehkhekwrhkqwe', orderedQty: 1, pickedQty: 0}
+  ]
 
+  doc = new PDF();
 
+  // var filename = Date.now().toString() + '_' + 'picklist.pdf';
+
+  // doc.pipe(fs.createWriteStream(__dirname + '/../pdfs/' + filename));
+  stream = doc.pipe(blobStream());
+
+  doc.fontSize(12);
+  doc.text(`Order Number:  ${order.orderNumber}`, 50, 50);
+  doc.text(`Product: ${order.productItemNumber}  -  ${order.productDescription}`, 50, 70);
+  doc.text(`Customer: ${order.customerName}`, 50, 90);
+
+  doc.fontSize(10);
+
+  doc.text('Item Number', 50, 120, { underline: true });
+  doc.text('Description', 150, 120, { underline: true });
+  doc.text('Ordered Qty', 450, 120, { underline: true });
+
+  data.forEach(function(element, index) {
+    doc.text(element.itemNumber, 50, 140 + (20 * index) );
+    doc.text(element.description, 150, 140 + (20 * index) );
+    doc.text(element.orderedQty, 470, 140 + (20 * index) );
+  });
+
+  doc.end();
+
+  stream.on('finish', function() {
+    var blob, url;
+    blob = stream.toBlob('application/pdf');
+    url = stream.toBlobURL('application/pdf');
+    console.log(url);
+    $(".pdf-frame").attr("src", url);
+  });
+
+  console.log("pdf generated");
 
 }
 

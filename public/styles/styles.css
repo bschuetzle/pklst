@@ -29,6 +29,20 @@ input[type=text]:not(.browser-default) {
   padding-top: 5px;
 }*/
 
+/*********
+Print Page
+**********/
+
+.pdf-frame {
+  /*margin: 0 auto;
+  text-align: center;*/
+}
+
+.iframe-container {
+  text-align: center;
+  width: 100%;
+}
+
 
 /*************
 Pick List Page
