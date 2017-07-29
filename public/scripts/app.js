@@ -1,10 +1,22 @@
 
-var pickList;
+
+// imports for pdf generation
+var PDF = require('pdfkit');
+var fs = require('fs');
 
 
+// global variables
+var pickList;       // holds array of pick item objects (json)
+var order = {};     // holds data about the order - orderNumber, customerName, productItemNumber, productDescription
+var pdfUrl          // holds url of pdf e.g. blob:http://localhost:3000/14468788-4d9a-45a7-be8e-2aa47dd8e3e6
+
+
+// when index.html has finished loading
 $(document).ready(function() {
 
-  console.log("app.js document is ready");
+  console.log("document is ready (in app.js)");
+
+  // TODO: render first Page
 
   setFocusOnOrderInput();
 
@@ -46,7 +58,9 @@ $(document).on("click", ".order-search-button", function(e) {
       success: function(json) {
         // if the order was found, display the pick list (next page)
         if (json.length != 0) {
-          displayPickList(orderNumber);
+          order.orderNumber = json[0].orderNumber;
+          order.customerName = json[0].customerName;
+          retrievePickList(orderNumber);
         }
         // if the order was not found, show an error message
         else {
@@ -67,10 +81,109 @@ $(document).on("click", ".order-search-button", function(e) {
 });
 
 
-// TODO: next page should generate a pdf and display inside an iFrame for preview and print
+function retrievePickList(orderNumber) {
+
+  $.ajax({
+    method: 'GET',
+    url: '/api/ordered_items/' + orderNumber,
+    success: function(json) {
+      // save/cache response data in global variable
+      pickList = json;
+      findMainProduct(json);
+      generatePDFDoc(json);
+      console.log(pickList);
+    },
+    error: function() {
+      console.log("error getting data");
+    }
+  });
+
+};
 
 
+function findMainProduct(json) {
+  json.forEach(function (element) {
+    if (element.itemType == "main") {
+      order.productItemNumber = element.itemNumber;
+      order.productDescription = element.description;
+    }
+  });
+  console.log(order);
+}
 
+
+function generatePDFDoc(json) {
+
+  var blobStream = require('blob-stream');
+  var blob, url;
+
+  doc = new PDF();
+
+  stream = doc.pipe(blobStream());
+
+  doc.fontSize(12);
+  doc.text(`Order Number:  ${order.orderNumber}`, 50, 50);
+  doc.text(`Product: ${order.productItemNumber} - ${order.productDescription}`, 50, 70);
+  doc.text(`Customer: ${order.customerName}`, 50, 90);
+
+  doc.fontSize(10);
+
+  doc.text('Item Number', 50, 140, { underline: true });
+  doc.text('Description', 150, 140, { underline: true });
+  doc.text('Ordered Qty', 460, 140, { underline: true });
+
+  json.forEach(function(element, index) {
+    doc.text(element.itemNumber, 50, 160 + (20 * index) );
+    doc.text(element.description, 150, 160 + (20 * index) );
+    doc.text(element.orderedQty, 485, 160 + (20 * index) );
+  });
+
+  doc.end();
+
+  stream.on('finish', function() {
+
+    blob = stream.toBlob('application/pdf');
+    url = stream.toBlobURL('application/pdf');
+    renderPDFPrintPage(url);
+
+  });
+
+  console.log("pdf generated");
+
+}
+
+
+function renderPDFPrintPage(url) {
+
+  var html = `
+    <div class="navbar-fixed">
+      <nav>
+        <div class="nav-wrapper blue-grey darken-3">
+          <a class="brand-logo">PKLST</a>
+        </div>
+      </nav>
+    </div>
+
+
+    <div class="container">
+      <div class="row">
+        <div class="col s12 iframe-container">
+          <iframe class="pdf-frame" style="border:1px solid grey" title="PDF in an i-Frame" src="" frameborder="1" scrolling="auto" height="1100" width="850" align="center" >
+          </iframe>
+        </div>
+      </div>
+    </div>
+
+
+  `
+
+  $("body").empty();
+  $("body").append(html);
+  console.log("pdf url:", url);
+
+  $(".pdf-frame").attr("src", url);
+
+}
 
 
 function displayPickList(orderNumber) {
