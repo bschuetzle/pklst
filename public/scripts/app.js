@@ -10,43 +10,45 @@ $(document).ready(function() {
 
 });
 
-
+// move the focus / set the cursor in the order input textbox
 function setFocusOnOrderInput() {
   $(".order-search-input").focus();
 }
 
+// move the focus / set the cursor in the item input textbox
 function setFocusOnItemInput() {
   $(".item-search-input").focus();
 }
 
-// if the enter key is pressed when the focus is on the search input, perform the search
+// execute the order search if the enter key is pressed while focus is in the order input textbox
 $(document).on("keypress", ".order-search-input", function(e) {
   if (e.keyCode==13) {
     $(".order-search-button").click();
   }
 });
 
-
+// execute the order search
 $(document).on("click", ".order-search-button", function(e) {
+  // get the order number from the text input
   orderNumber = $(".order-search-input").val();
-  $(".order-search-msg").empty();
-  console.log("Find button clicked with order number: " + orderNumber);
+  // show the warning message if an order number was not entered / scanned
   if (orderNumber == "") {
     $(".alert-callout-subtle").removeClass("alert warning");
     $(".alert-callout-subtle").addClass("warning");
     $(".alert-callout-subtle.warning").html(`<strong>Oops!</strong> Please enter an order number.`);
     $(".alert-callout-subtle.warning").css("display", "block");
   }
+  // attempt to find the order
   else {
-
     $.ajax({
       method: 'GET',
       url: '/api/orders/' + orderNumber,
       success: function(json) {
+        // if the order was found, display the pick list (next page)
         if (json.length != 0) {
-          // $(".order-search-msg").append("Order was found, customer is: " + json[0].customerName);
           displayPickList(orderNumber);
         }
+        // if the order was not found, show an error message
         else {
           $(".alert-callout-subtle").removeClass("alert warning");
           $(".alert-callout-subtle").addClass("alert");
@@ -54,6 +56,7 @@ $(document).on("click", ".order-search-button", function(e) {
           $(".alert-callout-subtle.alert").css("display", "block");
         }
       },
+      // TODO: if there was a problem with the ajax call, show an error message with the details
       error: function() {
         $(".order-search-msg").append("Error: some other error");
       }
@@ -62,6 +65,13 @@ $(document).on("click", ".order-search-button", function(e) {
   }
 
 });
+
+
+// TODO: next page should generate a pdf and display inside an iFrame for preview and print
+
+
+
+
 
 function displayPickList(orderNumber) {
 
