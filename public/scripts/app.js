@@ -213,9 +213,18 @@ $(document).on("click", ".continue-button", function(e) {
 
     <div class="container">
       <div class="row">
-        <div class="col s12 header-container">
+        <div class="col s6 push-s3 header-container">
 
-          <a class="waves-effect waves-light grey darken-1 btn upload-image-button"><i class="material-icons left">image</i>Select Image File</a>
+          <div class="file-field input-field">
+            <div class="btn grey darken-1">
+              <i class="material-icons left">image</i>
+              <span>Select Image</span>
+              <input type="file">
+            </div>
+            <div class="file-path-wrapper">
+              <input class="file-path validate" type="text">
+            </div>
+          </div>
 
         </div>
       </div>
@@ -224,6 +233,14 @@ $(document).on("click", ".continue-button", function(e) {
 
   $("body").empty();
   $("body").append(html);
+
+
+});
+
+
+// click on 'Select Image File' button
+$(document).on("click", ".upload-image-button", function(e) {
+
 
 
 });
