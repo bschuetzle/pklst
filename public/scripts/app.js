@@ -1,10 +1,21 @@
 
-var pickList;
+
+// imports for pdf generation
+var PDF = require('pdfkit');
+var fs = require('fs');
 
 
+// global variables
+var pickList;       // holds array of pick item objects (json)
+var order = {};     // holds data about the order - orderNumber, customerName, productItemNumber, productDescription
+
+
+// when index.html has finished loading
 $(document).ready(function() {
 
-  console.log("app.js document is ready");
+  console.log("document is ready (in app.js)");
+
+  // TODO: render first Page
 
   setFocusOnOrderInput();
 
@@ -46,7 +57,9 @@ $(document).on("click", ".order-search-button", function(e) {
       success: function(json) {
         // if the order was found, display the pick list (next page)
         if (json.length != 0) {
-          displayPickList(orderNumber);
+          order.orderNumber = json[0].orderNumber;
+          order.customerName = json[0].customerName;
+          retrievePickList(orderNumber);
         }
         // if the order was not found, show an error message
         else {
@@ -67,10 +80,52 @@ $(document).on("click", ".order-search-button", function(e) {
 });
 
 
-// TODO: next page should generate a pdf and display inside an iFrame for preview and print
+function retrievePickList(orderNumber) {
+
+  $.ajax({
+    method: 'GET',
+    url: '/api/ordered_items/' + orderNumber,
+    success: function(json) {
+      // save/cache response data in global variable
+      pickList = json;
+      findMainProduct(json);
+      console.log(pickList);
+    },
+    error: function() {
+      console.log("error getting data");
+    }
+  });
+
+};
+
+
+function findMainProduct(json) {
+  json.forEach(function (element) {
+    if (element.itemType == "main") {
+      order.productItemNumber = element.itemNumber;
+      order.productDescription = element.description;
+    }
+  });
+  console.log(order);
+}
+
+
+function generatePDFDoc() {
 
 
 
+
+
+}
+
+
+function renderPDFPrintPage() {
+
+
+
+
+
+}
 
 
 function displayPickList(orderNumber) {
