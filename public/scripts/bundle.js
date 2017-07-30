@@ -47105,7 +47105,8 @@ $(document).on("click", ".continue-button", function(e) {
       </div>
 
       <div class="row">
-        <div class="col s12 header-container">
+        <div class="col s12 image-container">
+          <a class="waves-effect waves-light light-green darken-3 btn image-upload-button"><i class="material-icons left">save</i>Save & Continue</a>
           <img class="picked-items-image" src="#" alt="" />
         </div>
       </div>
@@ -47132,8 +47133,11 @@ $(document).on("change", ".file-picker", function(e) {
   reader.onload = function (e) {
     $('.picked-items-image').attr('src', e.target.result);
   }
-  
+
   reader.readAsDataURL(image);
+
+  $(".image-upload-button").css("visibility", "visible");
+  $(".picked-items-image").css("visibility", "visible");
 
 
 });
@@ -47260,10 +47264,6 @@ function displayPickList(orderNumber) {
     }
   });
 
-
-  $(document).on("click", ".item-print-button", function(e) {
-    window.print();
-  });
 
 
   // if the enter key is pressed when the focus is on the item number input, automatically click the pack button
