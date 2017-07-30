@@ -22,21 +22,25 @@ $(document).ready(function() {
 
   setFocusOnOrderInput();
 
-  setFooterItemsFormat(currentPage);
+  setFooterItemsFormat([1]);
 
 });
 
-function setFooterItemsFormat(pageNum) {
+function setFooterItemsFormat(pagesArr) {
 
   var color = "#00695c"
 
-  var $iconEl = $(`.footer-page-${pageNum}-text`);
-  var $textEl = $(`.footer-page-${pageNum}-icon`);
-  var $arrowEl = $(`.footer-page-${pageNum}-arrow`);
+  for (var i = 0; i < pagesArr.length; i++) {
 
-  $iconEl.css("color", color);
-  $textEl.css("color", color);
-  $arrowEl.css("color", color);
+    var $iconEl = $(`.footer-page-${pagesArr[i]}-text`);
+    var $textEl = $(`.footer-page-${pagesArr[i]}-icon`);
+    var $arrowEl = $(`.footer-page-${pagesArr[i]}-arrow`);
+
+    $iconEl.css("color", color);
+    $textEl.css("color", color);
+    $arrowEl.css("color", color);
+
+  }
 
 }
 
@@ -175,43 +179,76 @@ function generatePDFDoc(json) {
 function renderPDFPrintPage(url) {
 
   var html = `
-    <div class="navbar-fixed">
-      <nav>
-        <div class="nav-wrapper blue-grey darken-3">
-          <a class="brand-logo">PKLST</a>
-        </div>
-      </nav>
-    </div>
 
-    <div class="container">
-      <div class="row">
-        <div class="col s12 header-container">
+    <header>
 
-          <a class="waves-effect waves-light grey darken-1 btn tooltipped print-button" data-position="top" data-delay="50" data-tooltip="I am a tooltip"><i class="material-icons left">print</i>Print</a>
-          <a class="waves-effect waves-light grey darken-1 btn continue-button"><i class="material-icons left">keyboard_tab</i>Continue</a>
+      <div class="navbar-fixed">
+        <nav>
+          <div class="nav-wrapper blue-grey darken-3">
+            <a class="brand-logo">PKLST</a>
+          </div>
+        </nav>
+      </div>
 
+    </header>
+
+    <main>
+
+      <div class="container">
+        <div class="row">
+          <div class="col s12 header-container">
+
+            <a class="waves-effect waves-light grey darken-1 btn tooltipped print-button" data-position="top" data-delay="50" data-tooltip="I am a tooltip"><i class="material-icons left">print</i>Print</a>
+            <a class="waves-effect waves-light grey darken-1 btn continue-button"><i class="material-icons left">keyboard_tab</i>Continue</a>
+
+          </div>
         </div>
       </div>
-    </div>
 
 
-    <div class="container">
-      <div class="row">
-        <div class="col s12 iframe-container">
-          <iframe class="pdf-frame" style="border:1px solid grey" title="PDF in an i-Frame" src="" frameborder="1" scrolling="auto" height="1100" width="850" align="center" >
-          </iframe>
+      <div class="container">
+        <div class="row">
+          <div class="col s12 iframe-container">
+            <iframe class="pdf-frame" style="border:1px solid grey" title="PDF in an i-Frame" src="" frameborder="1" scrolling="auto" height="1100" width="850" align="center" >
+            </iframe>
+          </div>
         </div>
       </div>
-    </div>
 
+    </main>
+
+    <footer class="page-footer light-green lighten-5">
+
+      <div class="container footer-container">
+
+        <i class="fa fa-file-text-o fa-2x footer-icon footer-page-1-icon" aria-hidden="true"></i>
+        <a class="footer-text footer-page-1-text">Enter Order</a>
+
+        <i class="fa fa-long-arrow-right fa-2x footer-arrow footer-page-2-arrow" aria-hidden="true"></i>
+        <i class="fa fa-print fa-2x footer-icon footer-page-2-icon" aria-hidden="true"></i>
+        <a class="footer-text footer-page-2-text">Print Pick List</a>
+
+        <i class="fa fa-long-arrow-right fa-2x footer-arrow footer-page-3-arrow" aria-hidden="true"></i>
+        <i class="fa fa-file-image-o fa-2x footer-icon footer-page-3-icon" aria-hidden="true"></i>
+        <a class="footer-text footer-page-3-text">Upload Image</a>
+
+        <i class="fa fa-long-arrow-right fa-2x footer-arrow footer-page-4-arrow" aria-hidden="true"></i>
+        <i class="fa fa-check-square-o fa-2x footer-icon footer-page-4-icon" aria-hidden="true"></i>
+        <a class="footer-text footer-page-4-text">Pick Items</a>
+
+      </div>
+
+    </footer>
 
   `
 
   $("body").empty();
   $("body").append(html);
-  console.log("pdf url:", url);
+  // console.log("pdf url:", url);
 
   $(".pdf-frame").attr("src", url);
+
+  setFooterItemsFormat([1,2]);
 
 }
 
