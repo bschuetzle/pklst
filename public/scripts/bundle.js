@@ -46881,9 +46881,10 @@ var fs = require('fs');
 
 
 // global variables
-var pickList;       // holds array of pick item objects (json)
-var order = {};     // holds data about the order - orderNumber, customerName, productItemNumber, productDescription
-var pdfUrl          // holds url of pdf e.g. blob:http://localhost:3000/14468788-4d9a-45a7-be8e-2aa47dd8e3e6
+var pickList;         // holds array of pick item objects (json)
+var order = {};       // holds data about the order - orderNumber, customerName, productItemNumber, productDescription
+var pdfUrl            // holds url of pdf e.g. blob:http://localhost:3000/14468788-4d9a-45a7-be8e-2aa47dd8e3e6
+var currentPage = 1   // keep track of the current page / step
 
 
 // when index.html has finished loading
@@ -46896,7 +46897,23 @@ $(document).ready(function() {
 
   setFocusOnOrderInput();
 
+  setFooterItemsFormat(currentPage);
+
 });
+
+function setFooterItemsFormat(pageNum) {
+
+  var color = "#00695c"
+
+  var $iconEl = $(`.footer-page-${pageNum}-text`);
+  var $textEl = $(`.footer-page-${pageNum}-icon`);
+  var $arrowEl = $(`.footer-page-${pageNum}-arrow`);
+
+  $iconEl.css("color", color);
+  $textEl.css("color", color);
+  $arrowEl.css("color", color);
+
+}
 
 // move the focus / set the cursor in the order input textbox
 function setFocusOnOrderInput() {

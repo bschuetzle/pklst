@@ -35,17 +35,9 @@ main {
   margin: 0 40px 0 25px;
 }
 
-.footer-page-1-text {
-  color: #00695c;
-  text-decoration: underline;
+.footer-text:hover {
+  cursor: pointer;
 }
-
-.footer-page-1-icon {
-  color: #00695c;
-}
-
-
-
 
 
 
