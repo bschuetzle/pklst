@@ -46934,6 +46934,7 @@ $(document).on("click", ".order-search-button", function(e) {
       success: function(json) {
         // if the order was found, display the pick list (next page)
         if (json.length != 0) {
+          order.id = json[0].id;
           order.orderNumber = json[0].orderNumber;
           order.customerName = json[0].customerName;
           retrievePickList(orderNumber);
@@ -47094,7 +47095,7 @@ $(document).on("click", ".continue-button", function(e) {
             <div class="btn grey darken-1">
               <i class="material-icons left">image</i>
               <span>Select Image</span>
-              <input class="file-picker" type="file">
+              <input class="file-picker" type="file" name="sampleFile">
             </div>
             <div class="file-path-wrapper">
               <input class="file-path validate" type="text">
@@ -47142,6 +47143,32 @@ $(document).on("change", ".file-picker", function(e) {
 
 });
 
+
+// save image file to server and update orders table with the filename
+$(document).on("click", ".image-upload-button", function(e) {
+
+  var formData = new FormData();
+  formData.append('file', $('.file-picker')[0].files[0]);
+  // var file = $('.file-picker')[0].files[0];
+
+  // console.log(file);
+  // console.log(formData);
+
+  $.ajax({
+    method: 'POST',
+    url: '/api/uploadimage/' + order.id,
+    data: formData,
+    processData: false,
+    contentType: false,
+    success: function(json) {
+      displayPickList(order.orderNumber);
+    },
+    error: function() {
+      console.log("error: image upload failed");
+    }
+  });
+
+});
 
 
 function displayPickList(orderNumber) {
