@@ -46934,6 +46934,7 @@ $(document).on("click", ".order-search-button", function(e) {
       success: function(json) {
         // if the order was found, display the pick list (next page)
         if (json.length != 0) {
+          order.id = json[0].id;
           order.orderNumber = json[0].orderNumber;
           order.customerName = json[0].customerName;
           retrievePickList(orderNumber);
@@ -47088,12 +47089,30 @@ $(document).on("click", ".continue-button", function(e) {
 
     <div class="container">
       <div class="row">
-        <div class="col s12 header-container">
+        <div class="col s6 push-s3 header-container">
 
-          <a class="waves-effect waves-light grey darken-1 btn upload-image-button"><i class="material-icons left">image</i>Select Image File</a>
+          <div class="file-field input-field">
+            <div class="btn grey darken-1">
+              <i class="material-icons left">image</i>
+              <span>Select Image</span>
+              <input class="file-picker" type="file" name="sampleFile">
+            </div>
+            <div class="file-path-wrapper">
+              <input class="file-path validate" type="text">
+            </div>
+          </div>
 
         </div>
       </div>
+
+      <div class="row">
+        <div class="col s12 image-container">
+          <a class="waves-effect waves-light light-green darken-3 btn image-upload-button"><i class="material-icons left">save</i>Save & Continue</a>
+          <img class="picked-items-image" src="#" alt="" />
+        </div>
+      </div>
+
+
     </div>
   `
 
@@ -47103,6 +47122,53 @@ $(document).on("click", ".continue-button", function(e) {
 
 });
 
+
+// preview image and show save button when a file is chosen or has changed
+$(document).on("change", ".file-picker", function(e) {
+
+  console.log("selected file changed");
+
+  var image = $(".file-picker")[0].files[0];
+
+  var reader = new FileReader();
+  reader.onload = function (e) {
+    $('.picked-items-image').attr('src', e.target.result);
+  }
+
+  reader.readAsDataURL(image);
+
+  $(".image-upload-button").css("visibility", "visible");
+  $(".picked-items-image").css("visibility", "visible");
+
+
+});
+
+
+// save image file to server and update orders table with the filename
+$(document).on("click", ".image-upload-button", function(e) {
+
+  var formData = new FormData();
+  formData.append('file', $('.file-picker')[0].files[0]);
+  // var file = $('.file-picker')[0].files[0];
+
+  // console.log(file);
+  // console.log(formData);
+
+  $.ajax({
+    method: 'POST',
+    url: '/api/uploadimage/' + order.id,
+    data: formData,
+    processData: false,
+    contentType: false,
+    success: function(json) {
+      displayPickList(order.orderNumber);
+    },
+    error: function() {
+      console.log("error: image upload failed");
+    }
+  });
+
+});
 
 
 function displayPickList(orderNumber) {
@@ -47225,10 +47291,6 @@ function displayPickList(orderNumber) {
     }
   });
 
-
-  $(document).on("click", ".item-print-button", function(e) {
-    window.print();
-  });
 
 
   // if the enter key is pressed when the focus is on the item number input, automatically click the pack button

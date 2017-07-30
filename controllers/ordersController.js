@@ -1,5 +1,7 @@
 var db = require('../models');
 var controllers = require('../controllers');
+const fileUpload = require('express-fileupload');
+
 
 function index(req, res) {
 
@@ -27,7 +29,37 @@ function find(req, res) {
 }
 
 
+function upload(req, res) {
+
+  var orderID = req.params.order_id;
+  var imageFile = req.files.file;
+  var filename = Date.now().toString() + '_' + imageFile.name;
+
+  db.Order.update({
+      pickedItemsImgFile: filename,
+    }, {
+      where: {
+        id: orderID
+      }
+    }
+  )
+  .then(updatedOrder => {
+
+    moveDir = __dirname + '/../public/pick_images/'
+
+    imageFile.mv(moveDir + filename, function(err) {
+      console.log('File uploaded!')
+    });
+
+    res.send(updatedOrder)
+
+  })
+
+}
+
+
 module.exports = {
   index: index,
-  find: find
+  find: find,
+  upload: upload
 };

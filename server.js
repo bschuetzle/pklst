@@ -7,15 +7,23 @@
 var express = require('express');
 var Sequelize = require('sequelize')
 var sql = require("mssql");
+var bodyParser = require('body-parser');
+var multer = require('multer');
+
 
 // import objects from other directories
 var db = require('./models');  // connect to the sql server database
 var controllers = require('./controllers');
-// var conn = require('./models/db.js');
 
 // set express app
 var app = express();
 
+
+app.use(bodyParser.urlencoded({ extended: true }));
+
+
+const fileUpload = require('express-fileupload');
+app.use(fileUpload());
 
 /***************
  * VIEW ROUTES *
@@ -53,6 +61,10 @@ app.get('/checkbox', function homepage(req, res) {
 
  // "PUT" api for single pick list item
  app.put('/api/picked_items/:order_id/:item_id/:picked_qty', controllers.picklists.update);
+
+ // "POST" api to upload picked items image
+ app.post('/api/uploadimage/:order_id', controllers.orders.upload);
+
 
 
 /**********

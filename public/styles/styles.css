@@ -12,11 +12,11 @@ Order Search Page
   font-size: 16px;
 }
 
-input[type=text]:not(.browser-default) {
+/*input[type=text]:not(.browser-default) {
   border: 1px solid rgb(160,160,160);
   padding-left: 20px;
   display: inline-block;
-}
+}*/
 
 .order-search-button {
   height: 47px;
@@ -44,6 +44,30 @@ Print Page
   width: 100%;
 }
 
+
+/****************
+Image Upload Page
+****************/
+
+.image-container {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.image-upload-button {
+  height: 45px;
+  padding-top: 5px;
+  margin-bottom: 50px;
+  visibility: hidden;
+}
+
+.picked-items-image {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  margin-bottom: 100px;
+  visibility: hidden;
+}
 
 /*************
 Pick List Page
