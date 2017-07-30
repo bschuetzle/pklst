@@ -219,7 +219,7 @@ $(document).on("click", ".continue-button", function(e) {
             <div class="btn grey darken-1">
               <i class="material-icons left">image</i>
               <span>Select Image</span>
-              <input type="file">
+              <input class="file-picker" type="file">
             </div>
             <div class="file-path-wrapper">
               <input class="file-path validate" type="text">
@@ -228,6 +228,14 @@ $(document).on("click", ".continue-button", function(e) {
 
         </div>
       </div>
+
+      <div class="row">
+        <div class="col s12 header-container">
+          <img class="picked-items-image" src="#" alt="" />
+        </div>
+      </div>
+
+
     </div>
   `
 
@@ -238,9 +246,19 @@ $(document).on("click", ".continue-button", function(e) {
 });
 
 
-// click on 'Select Image File' button
-$(document).on("click", ".upload-image-button", function(e) {
+// preview image and show save button when a file is chosen or has changed
+$(document).on("change", ".file-picker", function(e) {
 
+  console.log("selected file changed");
+
+  var image = $(".file-picker")[0].files[0];
+
+  var reader = new FileReader();
+  reader.onload = function (e) {
+    $('.picked-items-image').attr('src', e.target.result);
+  }
+  
+  reader.readAsDataURL(image);
 
 
 });
