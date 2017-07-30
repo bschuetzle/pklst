@@ -16,6 +16,7 @@
   <link rel="stylesheet" href="/styles/styles.css">
 
   <!-- VENDOR SCRIPTS -->
+  <script src="https://use.fontawesome.com/7057d5c5dd.js"></script>
   <script src="//ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.1/js/materialize.min.js"></script>
   <!-- <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script> -->
@@ -31,44 +32,74 @@
 
   <body>
 
-    <div class="navbar-fixed">
-      <nav>
-        <div class="nav-wrapper blue-grey darken-3">
-          <a class="brand-logo">PKLST</a>
-        </div>
-      </nav>
-    </div>
+    <header>
 
-
-    <div class="container order-search-container">
-
-      <div class="row">
-        <div class="col s6 offset-s3 order-search-label">
-          Order Number
-        </div>
-        <div class="col s5 offset-s3">
-          <div class="input-field">
-            <input type="text" class="order-search-input" placeholder="scan order number">
+      <div class="navbar-fixed">
+        <nav>
+          <div class="nav-wrapper blue-grey darken-3">
+            <a class="brand-logo">PKLST</a>
           </div>
-        </div>
-        <div class="col s1">
-          <button type="button" class="btn waves-effect grey darken-1 order-search-button">
-            <i class="large material-icons center order-search-icon">search</i>
-          </button>
-        </div>
-        <div class="col s6 offset-s3">
-          <div class="alert-container">
-            <div data-closable class="callout alert-callout-subtle alert">
-              <strong>Error!</strong>  Alert Alert
+        </nav>
+      </div>
+
+    </header>
+
+    <main>
+
+      <div class="container search-page-container">
+
+        <div class="row search-row">
+          <div class="col s6 offset-s3 order-search-label">
+            Order Number
+          </div>
+          <div class="col s5 offset-s3">
+            <div class="input-field">
+              <input type="text" class="order-search-input" placeholder="scan order number">
+            </div>
+          </div>
+          <div class="col s1">
+            <button type="button" class="btn waves-effect grey darken-1 order-search-button">
+              <i class="large material-icons center order-search-icon">search</i>
+            </button>
+          </div>
+          <div class="col s6 offset-s3">
+            <div class="alert-container">
+              <div data-closable class="callout alert-callout-subtle alert">
+                <strong>Error!</strong>  Alert Alert
+              </div>
             </div>
           </div>
         </div>
+
+
       </div>
 
 
-    </div>
+    </main>
 
-    
+
+    <footer class="page-footer light-green lighten-5">
+
+      <div class="container footer-container">
+
+        <i class="fa fa-file-text-o fa-2x footer-icon footer-page-1-icon" aria-hidden="true"></i>
+        <a class="footer-text footer-page-1-text">Enter Order</a>
+
+        <i class="fa fa-long-arrow-right fa-2x footer-arrow footer-page-2-arrow" aria-hidden="true"></i>
+        <i class="fa fa-print fa-2x footer-icon footer-page-2-icon" aria-hidden="true"></i>
+        <a class="footer-text footer-page-2-text">Print Pick List</a>
+
+        <i class="fa fa-long-arrow-right fa-2x footer-arrow footer-page-3-arrow" aria-hidden="true"></i>
+        <i class="fa fa-file-image-o fa-2x footer-icon footer-page-3-icon" aria-hidden="true"></i>
+        <a class="footer-text footer-page-3-text">Upload Image</a>
+
+        <i class="fa fa-long-arrow-right fa-2x footer-arrow footer-page-4-arrow" aria-hidden="true"></i>
+        <i class="fa fa-check-square-o fa-2x footer-icon footer-page-4-icon" aria-hidden="true"></i>
+        <a class="footer-text footer-page-4-text">Pick Items</a>
+
+      </div>
+
+    </footer>
 
 
   </body>

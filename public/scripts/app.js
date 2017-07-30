@@ -6,9 +6,10 @@ var fs = require('fs');
 
 
 // global variables
-var pickList;       // holds array of pick item objects (json)
-var order = {};     // holds data about the order - orderNumber, customerName, productItemNumber, productDescription
-var pdfUrl          // holds url of pdf e.g. blob:http://localhost:3000/14468788-4d9a-45a7-be8e-2aa47dd8e3e6
+var pickList;         // holds array of pick item objects (json)
+var order = {};       // holds data about the order - orderNumber, customerName, productItemNumber, productDescription
+var pdfUrl            // holds url of pdf e.g. blob:http://localhost:3000/14468788-4d9a-45a7-be8e-2aa47dd8e3e6
+var currentPage = 1   // keep track of the current page / step
 
 
 // when index.html has finished loading
@@ -21,7 +22,27 @@ $(document).ready(function() {
 
   setFocusOnOrderInput();
 
+  setFooterItemsFormat([1]);
+
 });
+
+function setFooterItemsFormat(pagesArr) {
+
+  var color = "#00695c"
+
+  for (var i = 0; i < pagesArr.length; i++) {
+
+    var $iconEl = $(`.footer-page-${pagesArr[i]}-text`);
+    var $textEl = $(`.footer-page-${pagesArr[i]}-icon`);
+    var $arrowEl = $(`.footer-page-${pagesArr[i]}-arrow`);
+
+    $iconEl.css("color", color);
+    $textEl.css("color", color);
+    $arrowEl.css("color", color);
+
+  }
+
+}
 
 // move the focus / set the cursor in the order input textbox
 function setFocusOnOrderInput() {
@@ -158,43 +179,76 @@ function generatePDFDoc(json) {
 function renderPDFPrintPage(url) {
 
   var html = `
-    <div class="navbar-fixed">
-      <nav>
-        <div class="nav-wrapper blue-grey darken-3">
-          <a class="brand-logo">PKLST</a>
-        </div>
-      </nav>
-    </div>
 
-    <div class="container">
-      <div class="row">
-        <div class="col s12 header-container">
+    <header>
 
-          <a class="waves-effect waves-light grey darken-1 btn tooltipped print-button" data-position="top" data-delay="50" data-tooltip="I am a tooltip"><i class="material-icons left">print</i>Print</a>
-          <a class="waves-effect waves-light grey darken-1 btn continue-button"><i class="material-icons left">keyboard_tab</i>Continue</a>
+      <div class="navbar-fixed">
+        <nav>
+          <div class="nav-wrapper blue-grey darken-3">
+            <a class="brand-logo">PKLST</a>
+          </div>
+        </nav>
+      </div>
 
+    </header>
+
+    <main>
+
+      <div class="container">
+        <div class="row">
+          <div class="col s12 header-container">
+
+            <a class="waves-effect waves-light grey darken-1 btn tooltipped print-button" data-position="top" data-delay="50" data-tooltip="I am a tooltip"><i class="material-icons left">print</i>Print</a>
+            <a class="waves-effect waves-light grey darken-1 btn continue-button"><i class="material-icons left">keyboard_tab</i>Continue</a>
+
+          </div>
         </div>
       </div>
-    </div>
 
 
-    <div class="container">
-      <div class="row">
-        <div class="col s12 iframe-container">
-          <iframe class="pdf-frame" style="border:1px solid grey" title="PDF in an i-Frame" src="" frameborder="1" scrolling="auto" height="1100" width="850" align="center" >
-          </iframe>
+      <div class="container">
+        <div class="row">
+          <div class="col s12 iframe-container">
+            <iframe class="pdf-frame" style="border:1px solid grey" title="PDF in an i-Frame" src="" frameborder="1" scrolling="auto" height="1100" width="850" align="center" >
+            </iframe>
+          </div>
         </div>
       </div>
-    </div>
 
+    </main>
+
+    <footer class="page-footer light-green lighten-5">
+
+      <div class="container footer-container">
+
+        <i class="fa fa-file-text-o fa-2x footer-icon footer-page-1-icon" aria-hidden="true"></i>
+        <a class="footer-text footer-page-1-text">Enter Order</a>
+
+        <i class="fa fa-long-arrow-right fa-2x footer-arrow footer-page-2-arrow" aria-hidden="true"></i>
+        <i class="fa fa-print fa-2x footer-icon footer-page-2-icon" aria-hidden="true"></i>
+        <a class="footer-text footer-page-2-text">Print Pick List</a>
+
+        <i class="fa fa-long-arrow-right fa-2x footer-arrow footer-page-3-arrow" aria-hidden="true"></i>
+        <i class="fa fa-file-image-o fa-2x footer-icon footer-page-3-icon" aria-hidden="true"></i>
+        <a class="footer-text footer-page-3-text">Upload Image</a>
+
+        <i class="fa fa-long-arrow-right fa-2x footer-arrow footer-page-4-arrow" aria-hidden="true"></i>
+        <i class="fa fa-check-square-o fa-2x footer-icon footer-page-4-icon" aria-hidden="true"></i>
+        <a class="footer-text footer-page-4-text">Pick Items</a>
+
+      </div>
+
+    </footer>
 
   `
 
   $("body").empty();
   $("body").append(html);
-  console.log("pdf url:", url);
+  // console.log("pdf url:", url);
 
   $(".pdf-frame").attr("src", url);
+
+  setFooterItemsFormat([1,2]);
 
 }
 
@@ -204,45 +258,82 @@ function renderPDFPrintPage(url) {
 $(document).on("click", ".continue-button", function(e) {
 
   var html = `
-    <div class="navbar-fixed">
-      <nav>
-        <div class="nav-wrapper blue-grey darken-3">
-          <a class="brand-logo">PKLST</a>
-        </div>
-      </nav>
-    </div>
 
-    <div class="container">
-      <div class="row">
-        <div class="col s6 push-s3 header-container">
+    <header>
 
-          <div class="file-field input-field">
-            <div class="btn grey darken-1">
-              <i class="material-icons left">image</i>
-              <span>Select Image</span>
-              <input class="file-picker" type="file" name="sampleFile">
-            </div>
-            <div class="file-path-wrapper">
-              <input class="file-path validate" type="text">
-            </div>
+      <div class="navbar-fixed">
+        <nav>
+          <div class="nav-wrapper blue-grey darken-3">
+            <a class="brand-logo">PKLST</a>
           </div>
-
-        </div>
+        </nav>
       </div>
 
-      <div class="row">
-        <div class="col s12 image-container">
-          <a class="waves-effect waves-light light-green darken-3 btn image-upload-button"><i class="material-icons left">save</i>Save & Continue</a>
-          <img class="picked-items-image" src="#" alt="" />
+    </header>
+
+
+    <main>
+
+      <div class="container">
+        <div class="row">
+          <div class="col s6 push-s3 header-container">
+
+            <div class="file-field input-field">
+              <div class="btn grey darken-1">
+                <i class="material-icons left">image</i>
+                <span>Select Image</span>
+                <input class="file-picker" type="file" name="sampleFile">
+              </div>
+              <div class="file-path-wrapper">
+                <input class="file-path validate" type="text">
+              </div>
+            </div>
+
+          </div>
         </div>
+
+        <div class="row">
+          <div class="col s12 image-container">
+            <a class="waves-effect waves-light light-green darken-3 btn image-upload-button"><i class="material-icons left">save</i>Save & Continue</a>
+            <img class="picked-items-image" src="#" alt="" />
+          </div>
+        </div>
+
       </div>
 
+    </main>
 
-    </div>
+
+    <footer class="page-footer light-green lighten-5">
+
+      <div class="container footer-container">
+
+        <i class="fa fa-file-text-o fa-2x footer-icon footer-page-1-icon" aria-hidden="true"></i>
+        <a class="footer-text footer-page-1-text">Enter Order</a>
+
+        <i class="fa fa-long-arrow-right fa-2x footer-arrow footer-page-2-arrow" aria-hidden="true"></i>
+        <i class="fa fa-print fa-2x footer-icon footer-page-2-icon" aria-hidden="true"></i>
+        <a class="footer-text footer-page-2-text">Print Pick List</a>
+
+        <i class="fa fa-long-arrow-right fa-2x footer-arrow footer-page-3-arrow" aria-hidden="true"></i>
+        <i class="fa fa-file-image-o fa-2x footer-icon footer-page-3-icon" aria-hidden="true"></i>
+        <a class="footer-text footer-page-3-text">Upload Image</a>
+
+        <i class="fa fa-long-arrow-right fa-2x footer-arrow footer-page-4-arrow" aria-hidden="true"></i>
+        <i class="fa fa-check-square-o fa-2x footer-icon footer-page-4-icon" aria-hidden="true"></i>
+        <a class="footer-text footer-page-4-text">Pick Items</a>
+
+      </div>
+
+    </footer>
+
+
   `
 
   $("body").empty();
   $("body").append(html);
+
+  setFooterItemsFormat([1,2,3]);
 
 
 });
@@ -308,71 +399,78 @@ function displayPickList(orderNumber) {
       console.log(pickList);
 
       var htmlHeader = `
-        <div class="navbar-fixed">
-          <nav>
-            <div class="nav-wrapper blue-grey darken-3">
-              <a class="brand-logo">PKLST</a>
-            </div>
-          </nav>
-        </div>
 
+        <header>
 
-        <div class="container item-search-container">
-          <div class="row">
-
-            <div class="col s12 order-search-label">
-              Item Number
-            </div>
-
-            <div class="col s3">
-              <div class="input-field">
-                <input type="text" class="item-search-input" placeholder="scan item number">
+          <div class="navbar-fixed">
+            <nav>
+              <div class="nav-wrapper blue-grey darken-3">
+                <a class="brand-logo">PKLST</a>
               </div>
-            </div>
+            </nav>
+          </div>
 
-            <div class="col s2">
-              <button type="button" class="btn waves-effect grey darken-1 item-search-button">Pack
-                <i class="large material-icons right" item-search-icon>file_download</i>
-              </button>
-            </div>
+        </header>
 
-            <div class="col s5">
-            </div>
 
-            <div class="col s2">
-              <div class="pick-list-status">In Process</div>
-            </div>
+        <main>
 
-            <div class="col s12">
-              <div class="alert-container">
-                <div data-closable class="callout alert-callout-subtle alert">
-                  <strong>Error!</strong>  Alert Alert
+          <div class="container item-search-container">
+            <div class="row">
+
+              <div class="col s12 order-search-label">
+                Item Number
+              </div>
+
+              <div class="col s3">
+                <div class="input-field">
+                  <input type="text" class="item-search-input" placeholder="scan item number">
                 </div>
               </div>
+
+              <div class="col s2">
+                <button type="button" class="btn waves-effect grey darken-1 item-search-button">Pack
+                  <i class="large material-icons right" item-search-icon>file_download</i>
+                </button>
+              </div>
+
+              <div class="col s5">
+              </div>
+
+              <div class="col s2">
+                <div class="pick-list-status">In Process</div>
+              </div>
+
+              <div class="col s12">
+                <div class="alert-container">
+                  <div data-closable class="callout alert-callout-subtle alert">
+                    <strong>Error!</strong>  Alert Alert
+                  </div>
+                </div>
+              </div>
+
             </div>
 
           </div>
 
-        </div>
-
       `
 
       var htmlList = `
-      <div class="container pick-list-container">
-        <div class="row">
-          <div class="col s12">
-            <table class="highlight bordered">
-              <thead>
-                <tr>
-                  <th style="text-align:center">Status</th>
-                  <th>Item Number</th>
-                  <th>Description</th>
-                  <th style="text-align:center">Ordered Qty</th>
-                  <th style="text-align:center">Picked Qty</th>
-                </tr>
-              </thead>
+        <div class="container pick-list-container">
+          <div class="row">
+            <div class="col s12">
+              <table class="highlight bordered">
+                <thead>
+                  <tr>
+                    <th style="text-align:center">Status</th>
+                    <th>Item Number</th>
+                    <th>Description</th>
+                    <th style="text-align:center">Ordered Qty</th>
+                    <th style="text-align:center">Picked Qty</th>
+                  </tr>
+                </thead>
 
-              <tbody>
+                <tbody>
       `
       json.forEach(function(element, index) {
 
@@ -396,19 +494,50 @@ function displayPickList(orderNumber) {
       });
 
       htmlList = htmlList + `
-                </tbody>
-              </table>
+                  </tbody>
+                </table>
+              </div>
             </div>
+        </div>
+      </main>
+
+      `
+
+      htmlFooter = `
+
+        <footer class="page-footer light-green lighten-5">
+
+          <div class="container footer-container">
+
+            <i class="fa fa-file-text-o fa-2x footer-icon footer-page-1-icon" aria-hidden="true"></i>
+            <a class="footer-text footer-page-1-text">Enter Order</a>
+
+            <i class="fa fa-long-arrow-right fa-2x footer-arrow footer-page-2-arrow" aria-hidden="true"></i>
+            <i class="fa fa-print fa-2x footer-icon footer-page-2-icon" aria-hidden="true"></i>
+            <a class="footer-text footer-page-2-text">Print Pick List</a>
+
+            <i class="fa fa-long-arrow-right fa-2x footer-arrow footer-page-3-arrow" aria-hidden="true"></i>
+            <i class="fa fa-file-image-o fa-2x footer-icon footer-page-3-icon" aria-hidden="true"></i>
+            <a class="footer-text footer-page-3-text">Upload Image</a>
+
+            <i class="fa fa-long-arrow-right fa-2x footer-arrow footer-page-4-arrow" aria-hidden="true"></i>
+            <i class="fa fa-check-square-o fa-2x footer-icon footer-page-4-icon" aria-hidden="true"></i>
+            <a class="footer-text footer-page-4-text">Pick Items</a>
+
           </div>
-      </div>
+
+        </footer>
+
       `
 
       $("body").empty();
-      $("body").append(htmlHeader + htmlList);
+      $("body").append(htmlHeader + htmlList + htmlFooter);
 
       displayPickStatus();
 
       setFocusOnItemInput();
+
+      setFooterItemsFormat([1,2,3,4]);
 
     },
     error: function() {
