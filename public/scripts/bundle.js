@@ -47587,7 +47587,7 @@ function displayPickList(orderNumber) {
     } else if (validation.pickedQty == validation.orderedQty) {
       $(".alert-callout-subtle").removeClass("alert warning");
       $(".alert-callout-subtle").addClass("alert");
-      $(".alert-callout-subtle.alert").html(`<strong>Error:</strong> This item has already been fully picked and packed - do not pack it!`);
+      $(".alert-callout-subtle.alert").html(`<strong>Error:</strong> This item has already been fully packed - do not pack it!`);
       $(".alert-callout-subtle.alert").css("display", "block");
     } else {
       $(".alert-callout-subtle.alert").css("display", "none");
@@ -47595,6 +47595,39 @@ function displayPickList(orderNumber) {
       pickItem(validation.orderID, validation.itemID, validation.pickedQty + 1);
     }
   });
+
+
+  $(document).on("click", ".item-unpack-button", function(e) {
+    orderNumber = $(".picklist-order-number").text();
+    itemNumber = $(".item-search-input").val();
+    console.log("Unpack button clicked with order number: " + orderNumber + ", item number: " + itemNumber);
+    console.log(pickList);
+    var validation = findPickListItem(itemNumber);
+    console.log(validation);
+    console.log("Found? " + validation.found);
+    if (itemNumber == "") {
+      $(".alert-callout-subtle").removeClass("alert warning");
+      $(".alert-callout-subtle").addClass("warning");
+      $(".alert-callout-subtle.warning").html(`<strong>Oops!</strong> Please enter an item number.`);
+      $(".alert-callout-subtle.warning").css("display", "block");
+    } else if (!validation.found) {
+      $(".alert-callout-subtle").removeClass("alert warning");
+      $(".alert-callout-subtle").addClass("alert");
+      $(".alert-callout-subtle.alert").html(`<strong>Error:</strong> This item is not part of this order.`);
+      $(".alert-callout-subtle.alert").css("display", "block");
+    } else if (validation.pickedQty == 0) {
+      $(".alert-callout-subtle").removeClass("alert warning");
+      $(".alert-callout-subtle").addClass("alert");
+      $(".alert-callout-subtle.alert").html(`<strong>Error:</strong> This item has already has not been packed yet.`);
+      $(".alert-callout-subtle.alert").css("display", "block");
+    } else {
+      $(".alert-callout-subtle.alert").css("display", "none");
+      $(".alert-callout-subtle.warning").css("display", "none");
+      unpickItem(validation.orderID, validation.itemID, validation.pickedQty - 1);
+    }
+  });
+
+  
 
   function findPickListItem(itemNumber) {
     var results = {found: false, itemNumber: "", orderID: 0, itemID: 0, orderedQty: 0, pickedQty: 0};
@@ -47640,6 +47673,40 @@ function displayPickList(orderNumber) {
 
   }
 
+
+  function unpickItem(orderID, itemID, pickedQty) {
+
+    $.ajax({
+      method: 'PUT',
+      url: `/api/picked_items/${orderID}/${itemID}/${pickedQty}`,
+      success: function(json) {
+        console.log("Success updating pick list");
+        console.log(json);
+        updateCachedPickList(itemID, pickedQty);
+        displayPickStatus();
+        updateDisplayedPickList(itemID, pickedQty);
+        flashPickedItem(itemID, pickedQty);
+        returnFocusToItemNumber();
+        displayPickCountToast();
+        if (pickList.status == "Complete") {
+          $(".order-complete-button").css("visibility", "visible");
+        } else {
+          $(".order-complete-button").css("visibility", "hidden");
+        }
+
+      },
+      error: function() {
+        console.log("Error updating pick list");
+        console.log(json);
+      }
+    });
+
+  }
+
+
+
+
+  // update the picked quantity for the selected item
   function updateCachedPickList(itemID, pickedQty) {
 
     pickList.forEach(function(element, index) {
@@ -47663,11 +47730,25 @@ function displayPickList(orderNumber) {
 
   function flashPickedItem(itemID, pickedQty) {
 
+    var orderedQty, pickedQty;
+    pickList.forEach(function(element, index) {
+      if (element.itemID == itemID) {
+        orderedQty = element.orderedQty;
+        pickedQty = element.pickedQty;
+      }
+    });
+
     var $rowEl = $(`.picklist-row[data-id='${itemID}']`);
     var $iconEl = $(`.pick-status-icon[data-id='${itemID}']`);
     // $rowEl.css("color", "green");
-    $iconEl.text("check_circle");
-    $iconEl.css("color", "green");
+    if (pickedQty == orderedQty) {
+      $iconEl.text("check_circle");
+      $iconEl.css("color", "green");
+    } else {
+      $iconEl.text("error_outline");
+      $iconEl.css("color", "red");
+    }
+
 
   }
 
