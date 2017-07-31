@@ -114,14 +114,25 @@ Pick List Page
 *************/
 
 .item-search-container {
-  margin-top: 50px;
+  margin-top: 30px;
 }
 
-.item-search-button {
-  height: 47px;
-  margin-top: 14px;
-  padding-top: 5px;
-  display: inline-block;
+.pick-list-status {
+  padding: 10px;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.picklist-buttons {
+  margin-top: 25px;
+}
+
+.order-complete-button {
+  visibility: hidden;
+}
+
+.pick-list-column {
+  margin-bottom: 200px;
 }
 
 .item-search-icon {
@@ -138,7 +149,6 @@ tr {
   /*animation: fadeinout 4s linear 1 forwards;*/
   transition: color 1s ease;
 }
-
 
 nav .brand-logo {
   margin: 0 30px;
@@ -159,12 +169,7 @@ nav .brand-logo {
   width: 100px;
 }
 
-.pick-list-status {
-  margin-top: 25px;
-  padding: 5px;
-  border: 1px solid grey;
-  text-align: center;
-}
+
 
 
 /*.table-header-orderedqty {

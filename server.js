@@ -65,6 +65,9 @@ app.get('/checkbox', function homepage(req, res) {
  // "POST" api to upload picked items image
  app.post('/api/uploadimage/:order_id', controllers.orders.upload);
 
+ // "POST" api to update order status
+ app.post('/api/order_update/:order_id', controllers.orders.update);
+
 
 
 /**********

@@ -46883,27 +46883,131 @@ var fs = require('fs');
 // global variables
 var pickList;         // holds array of pick item objects (json)
 var order = {};       // holds data about the order - orderNumber, customerName, productItemNumber, productDescription
+var pickList = {};    // holds data about the pick list - status, total ordered, total picked, etc.
 var pdfUrl            // holds url of pdf e.g. blob:http://localhost:3000/14468788-4d9a-45a7-be8e-2aa47dd8e3e6
 var currentPage = 1   // keep track of the current page / step
+
 
 
 // when index.html has finished loading
 $(document).ready(function() {
 
   console.log("document is ready (in app.js)");
-  console.log("retest of browerify/watchify");
 
-  $('.tooltipped').tooltip({delay: 50});
+  $('.modal').modal();
+
+  renderHomePage();
+
+});
+
+
+
+// MODAL TESTING
+$(document).on("click", ".modal-test-button", function(e) {
+  $('#modal1').modal('open');
+});
+
+$(document).on("click", ".modal-cancel-button", function(e) {
+  console.log("cancel modal button clicked");
+});
+
+$(document).on("click", ".modal-complete-button", function(e) {
+  console.log("complete modal button clicked");
+});
+// MODAL TESTING
+
+
+function renderHomePage() {
+
+  var html = `
+
+    <header>
+
+      <div class="navbar-fixed">
+        <nav>
+          <div class="nav-wrapper blue-grey darken-3">
+            <a class="brand-logo">PKLST</a>
+          </div>
+        </nav>
+      </div>
+
+    </header>
+
+    <main>
+
+      <div class="container search-page-container">
+
+        <div class="row search-row">
+          <div class="col s6 offset-s3 order-search-label">
+            Order Number
+          </div>
+          <div class="col s5 offset-s3">
+            <div class="input-field">
+              <input type="text" class="order-search-input" placeholder="scan order number">
+            </div>
+          </div>
+          <div class="col s1">
+            <button type="button" class="btn waves-effect grey darken-1 order-search-button">
+              <i class="large material-icons center order-search-icon">search</i>
+            </button>
+          </div>
+          <div class="col s6 offset-s3">
+            <div class="alert-container">
+              <div data-closable class="callout alert-callout-subtle alert">
+                <strong>Error!</strong>  Alert Alert
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+      </div>
+
+
+    </main>
+
+
+    <footer class="page-footer blue-grey lighten-5">
+
+      <div class="container footer-container">
+
+        <i class="fa fa-file-text-o fa-2x footer-icon footer-page-1-icon" aria-hidden="true"></i>
+        <a class="footer-text footer-page-1-text">Enter Order</a>
+
+        <i class="fa fa-long-arrow-right fa-2x footer-arrow footer-page-2-arrow" aria-hidden="true"></i>
+        <i class="fa fa-print fa-2x footer-icon footer-page-2-icon" aria-hidden="true"></i>
+        <a class="footer-text footer-page-2-text">Print Pick List</a>
+
+        <i class="fa fa-long-arrow-right fa-2x footer-arrow footer-page-3-arrow" aria-hidden="true"></i>
+        <i class="fa fa-file-image-o fa-2x footer-icon footer-page-3-icon" aria-hidden="true"></i>
+        <a class="footer-text footer-page-3-text">Upload Image</a>
+
+        <i class="fa fa-long-arrow-right fa-2x footer-arrow footer-page-4-arrow" aria-hidden="true"></i>
+        <i class="fa fa-check-square-o fa-2x footer-icon footer-page-4-icon" aria-hidden="true"></i>
+        <a class="footer-text footer-page-4-text">Pick Items</a>
+
+      </div>
+
+    </footer>
+
+
+
+  `
+
+  $("body").empty();
+  $("body").append(html);
 
   setFocusOnOrderInput();
 
   setFooterItemsFormat([1]);
 
-});
+
+}
+
 
 function setFooterItemsFormat(pagesArr) {
 
-  var color = "#00695c"
+  var color = "#00796b"
 
   for (var i = 0; i < pagesArr.length; i++) {
 
@@ -46958,7 +47062,16 @@ $(document).on("click", ".order-search-button", function(e) {
           order.id = json[0].id;
           order.orderNumber = json[0].orderNumber;
           order.customerName = json[0].customerName;
-          retrievePickList(orderNumber);
+          order.orderStatus = json[0].orderStatus;
+          order.pickedItemsImgFile = json[0].pickedItemsImgFile;
+          if (order.orderStatus == "picked") {
+            $(".alert-callout-subtle").removeClass("alert warning");
+            $(".alert-callout-subtle").addClass("alert");
+            $(".alert-callout-subtle.alert").html(`<strong>Error:</strong> The order number '${orderNumber}' has already been picked.`);
+            $(".alert-callout-subtle.alert").css("display", "block");
+          } else {
+            retrievePickList(orderNumber);
+          }
         }
         // if the order was not found, show an error message
         else {
@@ -47092,7 +47205,7 @@ function renderPDFPrintPage(url) {
 
     </main>
 
-    <footer class="page-footer light-green lighten-5">
+    <footer class="page-footer blue-grey lighten-5">
 
       <div class="container footer-container">
 
@@ -47179,7 +47292,7 @@ $(document).on("click", ".continue-button", function(e) {
     </main>
 
 
-    <footer class="page-footer light-green lighten-5">
+    <footer class="page-footer blue-grey lighten-5">
 
       <div class="container footer-container">
 
@@ -47294,27 +47407,41 @@ function displayPickList(orderNumber) {
             <div class="row">
 
               <div class="col s12 order-search-label">
+                <div class="pick-list-status">In Process</div>
+              </div>
+
+              <div class="col s12 order-search-label">
                 Item Number
               </div>
 
+
               <div class="col s3">
+
                 <div class="input-field">
                   <input type="text" class="item-search-input" placeholder="scan item number">
                 </div>
+
               </div>
 
-              <div class="col s2">
-                <button type="button" class="btn waves-effect grey darken-1 item-search-button">Pack
+              <div class="col s9">
+
+                <button type="button" class="btn waves-effect grey darken-1 picklist-buttons item-pack-button">Pack
                   <i class="large material-icons right" item-search-icon>file_download</i>
                 </button>
+
+                <button type="button" class="btn waves-effect grey darken-1 picklist-buttons item-unpack-button">Unpack
+                  <i class="large material-icons right" item-search-icon>file_upload</i>
+                </button>
+
+                <button type="button" class="btn waves-effect grey darken-1 picklist-buttons order-complete-button">Complete
+                  <i class="large material-icons right" item-search-icon>check_box</i>
+                </button>
+
               </div>
 
-              <div class="col s5">
-              </div>
 
-              <div class="col s2">
-                <div class="pick-list-status">In Process</div>
-              </div>
+
+
 
               <div class="col s12">
                 <div class="alert-container">
@@ -47332,8 +47459,8 @@ function displayPickList(orderNumber) {
 
       var htmlList = `
         <div class="container pick-list-container">
-          <div class="row">
-            <div class="col s12">
+          <div class="row pick-list-row">
+            <div class="col s12 pick-list-column">
               <table class="highlight bordered">
                 <thead>
                   <tr>
@@ -47380,7 +47507,7 @@ function displayPickList(orderNumber) {
 
       htmlFooter = `
 
-        <footer class="page-footer light-green lighten-5">
+        <footer class="page-footer blue-grey lighten-5">
 
           <div class="container footer-container">
 
@@ -47414,6 +47541,10 @@ function displayPickList(orderNumber) {
 
       setFooterItemsFormat([1,2,3,4]);
 
+      if (pickList.status == "Complete") {
+        $(".order-complete-button").css("visibility", "visible");
+      }
+
     },
     error: function() {
       console.log("error getting data");
@@ -47425,11 +47556,11 @@ function displayPickList(orderNumber) {
   // if the enter key is pressed when the focus is on the item number input, automatically click the pack button
   $(document).on("keypress", ".item-search-input", function(e) {
     if (e.keyCode==13) {
-      $(".item-search-button").click();
+      $(".item-pack-button").click();
     }
   });
 
-  $(document).on("click", ".item-search-button", function(e) {
+  $(document).on("click", ".item-pack-button", function(e) {
     orderNumber = $(".picklist-order-number").text();
     itemNumber = $(".item-search-input").val();
     console.log("Pack button clicked with order number: " + orderNumber + ", item number: " + itemNumber);
@@ -47489,6 +47620,11 @@ function displayPickList(orderNumber) {
         flashPickedItem(itemID, pickedQty);
         returnFocusToItemNumber();
         displayPickStatus();
+        displayPickCountToast();
+        if (pickList.status == "Complete") {
+          $(".order-complete-button").css("visibility", "visible");
+        }
+
       },
       error: function() {
         console.log("Error updating pick list");
@@ -47501,7 +47637,6 @@ function displayPickList(orderNumber) {
   function updateCachedPickList(itemID, pickedQty) {
 
     pickList.forEach(function(element, index) {
-      // console.log("Item Number: " + element.itemNumber);
       if (element.itemID == itemID) {
         pickList[index].pickedQty = pickedQty;
       }
@@ -47524,7 +47659,7 @@ function displayPickList(orderNumber) {
 
     var $rowEl = $(`.picklist-row[data-id='${itemID}']`);
     var $iconEl = $(`.pick-status-icon[data-id='${itemID}']`);
-    $rowEl.css("color", "green");
+    // $rowEl.css("color", "green");
     $iconEl.text("check_circle");
     $iconEl.css("color", "green");
 
@@ -47535,6 +47670,7 @@ function displayPickList(orderNumber) {
     $(".item-search-input").val("");
     $(".item-search-input").focus();
   }
+
 
   function displayPickStatus() {
     var totalOrderedQty = 0;
@@ -47554,9 +47690,47 @@ function displayPickList(orderNumber) {
       status = "Complete";
       $(".pick-list-status").css("background-color", "rgb(204, 255, 153)");
     }
+    pickList.totalOrderedQty = totalOrderedQty;
+    pickList.totalPickedQty = totalPickedQty;
+    pickList.status = status;
     $(".pick-list-status").text(status);
 
   }
+
+
+  function displayPickCountToast() {
+    var totalOrderedQty = 0;
+    var totalPickedQty = 0;
+    var message = "";
+    pickList.forEach(function(element) {
+      totalOrderedQty += element.orderedQty;
+      totalPickedQty += element.pickedQty;
+    });
+    message = `${totalPickedQty} of ${totalOrderedQty} items packed`;
+    pickList.totalOrderedQty = totalOrderedQty;
+    pickList.totalPickedQty = totalPickedQty;
+    Materialize.toast(message, 4000);
+  }
+
+
+  $(document).on("click", ".order-complete-button", function(e) {
+    console.log("complete button clicked");
+
+    $.ajax({
+      method: 'POST',
+      url: '/api/order_update/' + order.id,
+      success: function(json) {
+
+        renderHomePage();
+
+      },
+      error: function() {
+        console.log("error updating order");
+      }
+    });
+
+
+  });
 
 }
 
