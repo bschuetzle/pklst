@@ -29,12 +29,35 @@ function find(req, res) {
 }
 
 
+function update(req, res) {
+
+  var orderID = req.params.order_id;
+
+  console.log("order id within controller:", orderID);
+
+  db.Order.update({
+      orderStatus: "picked",
+    }, {
+      where: {
+        id: orderID
+      }
+    }
+  )
+  .then(updatedOrder => {
+
+    res.send(updatedOrder)
+
+  })
+
+}
+
+
 function upload(req, res) {
 
   var orderID = req.params.order_id;
   var imageFile = req.files.file;
-  var filename = Date.now().toString() + '_PICK_ORDERID_' + orderID.toString();
-  
+  var filename = Date.now().toString() + imageFile.name;
+
   db.Order.update({
       pickedItemsImgFile: filename,
     }, {
@@ -61,5 +84,7 @@ function upload(req, res) {
 module.exports = {
   index: index,
   find: find,
+  update: update,
   upload: upload
+
 };

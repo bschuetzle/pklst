@@ -46893,15 +46893,10 @@ var currentPage = 1   // keep track of the current page / step
 $(document).ready(function() {
 
   console.log("document is ready (in app.js)");
-  console.log("retest of browerify/watchify");
 
   $('.modal').modal();
 
-  $('.tooltipped').tooltip({delay: 50});
-
-  setFocusOnOrderInput();
-
-  setFooterItemsFormat([1]);
+  renderHomePage();
 
 });
 
@@ -47067,7 +47062,16 @@ $(document).on("click", ".order-search-button", function(e) {
           order.id = json[0].id;
           order.orderNumber = json[0].orderNumber;
           order.customerName = json[0].customerName;
-          retrievePickList(orderNumber);
+          order.orderStatus = json[0].orderStatus;
+          order.pickedItemsImgFile = json[0].pickedItemsImgFile;
+          if (order.orderStatus == "picked") {
+            $(".alert-callout-subtle").removeClass("alert warning");
+            $(".alert-callout-subtle").addClass("alert");
+            $(".alert-callout-subtle.alert").html(`<strong>Error:</strong> The order number '${orderNumber}' has already been picked.`);
+            $(".alert-callout-subtle.alert").css("display", "block");
+          } else {
+            retrievePickList(orderNumber);
+          }
         }
         // if the order was not found, show an error message
         else {
@@ -47702,7 +47706,7 @@ function displayPickList(orderNumber) {
       totalOrderedQty += element.orderedQty;
       totalPickedQty += element.pickedQty;
     });
-    message = `${totalPickedQty} of ${totalOrderedQty} items packed`
+    message = `${totalPickedQty} of ${totalOrderedQty} items packed`;
     pickList.totalOrderedQty = totalOrderedQty;
     pickList.totalPickedQty = totalPickedQty;
     Materialize.toast(message, 4000);
@@ -47711,7 +47715,21 @@ function displayPickList(orderNumber) {
 
   $(document).on("click", ".order-complete-button", function(e) {
     console.log("complete button clicked");
-    renderHomePage();
+
+    $.ajax({
+      method: 'POST',
+      url: '/api/order_update/' + order.id,
+      success: function(json) {
+
+        renderHomePage();
+
+      },
+      error: function() {
+        console.log("error updating order");
+      }
+    });
+
+
   });
 
 }
