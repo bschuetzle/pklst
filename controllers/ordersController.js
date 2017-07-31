@@ -33,8 +33,8 @@ function upload(req, res) {
 
   var orderID = req.params.order_id;
   var imageFile = req.files.file;
-  var filename = Date.now().toString() + '_' + imageFile.name;
-
+  var filename = Date.now().toString() + '_PICK_ORDERID_' + orderID.toString();
+  
   db.Order.update({
       pickedItemsImgFile: filename,
     }, {
