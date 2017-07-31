@@ -9,8 +9,6 @@
   <title>PKLST</title>
 
   <!-- STYLESHEETS -->
-  <!-- <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"> -->
-  <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.4.1/css/foundation.min.css" integrity="sha256-itWEYdFWzZPBG78bJOOiQIn06QCgN/F0wMDcC4nOhxY=" crossorigin="anonymous" /> -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.1/css/materialize.min.css">
   <link rel='stylesheet' href="https://fonts.googleapis.com/css?family=Khula|Open+Sans|Roboto|Lato|Raleway|Material+Icons">
   <link rel="stylesheet" href="/styles/styles.css">
@@ -19,14 +17,13 @@
   <script src="https://use.fontawesome.com/7057d5c5dd.js"></script>
   <script src="//ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.1/js/materialize.min.js"></script>
-  <!-- <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script> -->
-  <!-- <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.7.0/moment.min.js" type="text/javascript"></script> -->
-  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.4.1/js/foundation.min.js" integrity="sha256-Nd2xznOkrE9HkrAMi4xWy/hXkQraXioBg9iYsBrcFrs=" crossorigin="anonymous"></script> -->
 
   <!-- APPLICATION SCRIPTS -->
   <script src="/scripts/bundle.js"></script>
   <!-- <script src="/scripts/app.js"></script> -->
 
+  <!-- FAVICON -->
+  <link rel="shortcut icon" href="images/favicon.png" type="image/x-icon">
 
 </head>
 
@@ -37,12 +34,13 @@
       <div class="navbar-fixed">
         <nav>
           <div class="nav-wrapper blue-grey darken-3">
-            <a class="brand-logo">PKLST</a>
+            <a class="brand-logo"><i class="large material-icons brand-logo-icon">check_box</i>PKLST</a>
           </div>
         </nav>
       </div>
     </header>
     <!-- navbar -->
+
 
     <!-- homepage content -->
     <main class="home-page" style="display: none;">
@@ -83,7 +81,7 @@
         <div class="row">
           <div class="col s12 header-container">
 
-            <a class="waves-effect waves-light grey darken-1 btn tooltipped print-button" data-position="top" data-delay="50" data-tooltip="I am a tooltip"><i class="material-icons left">print</i>Print</a>
+            <a class="waves-effect waves-light grey darken-1 btn tooltipped print-button" data-position="top" data-delay="50" data-tooltip="Send PDF to the Default Printer"><i class="material-icons left">print</i>Print</a>
             <a class="waves-effect waves-light grey darken-1 btn continue-button"><i class="material-icons left">keyboard_tab</i>Continue</a>
 
           </div>
@@ -233,10 +231,25 @@
         <i class="fa fa-long-arrow-right fa-2x footer-arrow footer-page-3-arrow" aria-hidden="true"></i>
 
         <i class="fa fa-check-square-o fa-2x footer-icon footer-page-4-icon" aria-hidden="true"></i>
-        <a class="footer-text footer-page-4-text">Pick Items</a>
+        <a class="footer-text footer-page-4-text">Pick & Pack</a>
       </div>
     </footer>
     <!-- footer -->
+
+
+
+    <!-- order completion confirmation modal -->
+    <div id="modal1" class="modal order-complete-modal">
+      <div class="modal-content">
+        <h4 class="modal-header">Confirm Completion</h4>
+        <p class="modal-text">Please double-check that all items have been packed into the box.  Click the complete button to confirm that the pick and pack process is complete, and the order status will be updated.</p>
+      </div>
+      <div class="modal-footer">
+        <a class="modal-action modal-close waves-effect waves-green btn-flat modal-cancel-button">Cancel</a>
+        <a class="modal-action modal-close waves-effect waves-green btn-flat modal-complete-button">Complete</a>
+      </div>
+    </div>
+    <!-- order completion confirmation modal -->
 
 
   </body>
