@@ -302,7 +302,7 @@ function displayPickList(orderNumber) {
 
       $(".table-body").empty();
       $(".table-body").append(tableBody);
-      
+
       $(".image-upload-page").css("display", "none");
       $(".picklist-page").css("display", "inline");
 
@@ -340,20 +340,11 @@ function displayPickList(orderNumber) {
     console.log(validation);
     console.log("Found? " + validation.found);
     if (itemNumber == "") {
-      $(".alert-callout-subtle").removeClass("alert warning");
-      $(".alert-callout-subtle").addClass("warning");
-      $(".alert-callout-subtle.warning").html(`<strong>Oops!</strong> Please enter an item number.`);
-      $(".alert-callout-subtle.warning").css("display", "block");
+      displayErrorMsg("warning", "Oops!", `Please enter an item number.`);
     } else if (!validation.found) {
-      $(".alert-callout-subtle").removeClass("alert warning");
-      $(".alert-callout-subtle").addClass("alert");
-      $(".alert-callout-subtle.alert").html(`<strong>Error:</strong> This item is not part of this order - do not pack it!`);
-      $(".alert-callout-subtle.alert").css("display", "block");
+      displayErrorMsg("alert", "Error:", `The item '${itemNumber}' is not part of this order - do not pack it!`);
     } else if (validation.pickedQty == validation.orderedQty) {
-      $(".alert-callout-subtle").removeClass("alert warning");
-      $(".alert-callout-subtle").addClass("alert");
-      $(".alert-callout-subtle.alert").html(`<strong>Error:</strong> This item has already been fully packed - do not pack it!`);
-      $(".alert-callout-subtle.alert").css("display", "block");
+      displayErrorMsg("alert", "Error:", `The item '${itemNumber}' has already been fully packed - do not pack it!`);
     } else {
       $(".alert-callout-subtle.alert").css("display", "none");
       $(".alert-callout-subtle.warning").css("display", "none");
@@ -437,7 +428,7 @@ function displayPickList(orderNumber) {
     });
 
   }
-
+  
 
   function unpickItem(orderID, itemID, pickedQty) {
 
