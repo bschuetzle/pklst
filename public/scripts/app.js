@@ -257,10 +257,16 @@ function generatePDFDoc(json) {
 
   stream = doc.pipe(blobStream());
 
-  doc.fontSize(12);
-  doc.text(`Order Number:  ${order.orderNumber}`, 50, 50);
-  doc.text(`Product: ${order.productItemNumber} - ${order.productDescription}`, 50, 70);
-  doc.text(`Customer: ${order.customerName}`, 50, 90);
+  // doc.image('images/company_logo.png', 50, 15);
+
+  doc.fontSize(11);
+  doc.text(`Order Number:`, 50, 50);
+  doc.text(`Product:`, 50, 70);
+  doc.text(`Customer:`, 50, 90);
+
+  doc.text(`${order.orderNumber}`, 140, 50);
+  doc.text(`${order.productItemNumber} - ${order.productDescription}`, 140, 70);
+  doc.text(`${order.customerName}`, 140, 90);
 
   doc.fontSize(10);
 
