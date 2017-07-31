@@ -43,7 +43,7 @@ function setFooterItemsFormat(pagesArr) {
     $(`.footer-page-${[i]}-icon`).css("color", color);
     $(`.footer-page-${[i]}-arrow`).css("color", color);
   }
-  var color = "#00796b"
+  var color = "#558b2f"
   for (var i = 0; i < pagesArr.length; i++) {
     $(`.footer-page-${pagesArr[i]}-text`).css("color", color);
     $(`.footer-page-${pagesArr[i]}-icon`).css("color", color);
