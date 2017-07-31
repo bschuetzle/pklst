@@ -46918,11 +46918,24 @@ $(document).on("click", ".modal-complete-button", function(e) {
 
 
 function renderHomePage() {
+
+  $(".order-search-input").val("");
+  $(".picklist-page").css("display", "none");
   $(".home-page").css("display", "inline");
   setFocusOnOrderInput();
+  setFooterItemsFormat([]);
+
 }
 
+
 function setFooterItemsFormat(pagesArr) {
+  var numPages = 4;
+  var color = "grey"
+  for (var i = 1; i <= numPages; i++) {
+    $(`.footer-page-${[i]}-text`).css("color", color);
+    $(`.footer-page-${[i]}-icon`).css("color", color);
+    $(`.footer-page-${[i]}-arrow`).css("color", color);
+  }
   var color = "#00796b"
   for (var i = 0; i < pagesArr.length; i++) {
     $(`.footer-page-${pagesArr[i]}-text`).css("color", color);
@@ -46972,6 +46985,7 @@ $(document).on("click", ".order-search-button", function(e) {
           if (order.orderStatus == "picked") {
             displayErrorMsg("alert", "Error:", `The order number '${orderNumber}' has already been picked.`);
           } else {
+            hideErrorMsg();
             retrievePickList(orderNumber);
           }
         }
@@ -46998,6 +47012,11 @@ function displayErrorMsg(type, prefix, message) {
   $(`.alert-callout-subtle.${type}`).html(`<strong>${prefix}</strong> ${message}`);
   $(`.alert-callout-subtle.${type}`).css("display", "block");
 
+}
+
+function hideErrorMsg() {
+  $(".alert-callout-subtle.alert").css("display", "none");
+  $(".alert-callout-subtle.warning").css("display", "none");
 }
 
 
@@ -47215,7 +47234,7 @@ function displayPickList(orderNumber) {
     console.log(validateAction(itemNumber, "pack"));
 
     if (validateAction(itemNumber, "pack")) {
-      pickItem(itemInfo.orderID, itemInfo.itemID, itemInfo.pickedQty + 1);
+      updatePickList(itemInfo.orderID, itemInfo.itemID, itemInfo.pickedQty + 1);
     }
 
   });
@@ -47230,7 +47249,7 @@ function displayPickList(orderNumber) {
     console.log(validateAction(itemNumber, "unpack"));
 
     if (validateAction(itemNumber, "unpack")) {
-      unpickItem(itemInfo.orderID, itemInfo.itemID, itemInfo.pickedQty - 1);
+      updatePickList(itemInfo.orderID, itemInfo.itemID, itemInfo.pickedQty - 1);
     }
 
   });
@@ -47281,17 +47300,14 @@ function displayPickList(orderNumber) {
       displayErrorMsg("alert", "Error:", `The item '${itemNumber}' is not part of this order.`);
       return false;
     } else {
-      $(".alert-callout-subtle.alert").css("display", "none");
-      $(".alert-callout-subtle.warning").css("display", "none");
+      hideErrorMsg();
       return true;
     }
 
   }
 
 
-
-
-  function pickItem(orderID, itemID, pickedQty) {
+  function updatePickList(orderID, itemID, pickedQty) {
 
     $.ajax({
       method: 'PUT',
@@ -47317,38 +47333,6 @@ function displayPickList(orderNumber) {
     });
 
   }
-
-
-  function unpickItem(orderID, itemID, pickedQty) {
-
-    $.ajax({
-      method: 'PUT',
-      url: `/api/picked_items/${orderID}/${itemID}/${pickedQty}`,
-      success: function(json) {
-        console.log("Success updating pick list");
-        console.log(json);
-        updateCachedPickList(itemID, pickedQty);
-        displayPickStatus();
-        updateDisplayedPickList(itemID, pickedQty);
-        flashPickedItem(itemID, pickedQty);
-        returnFocusToItemNumber();
-        displayPickCountToast();
-        if (pickList.status == "Complete") {
-          $(".order-complete-button").css("visibility", "visible");
-        } else {
-          $(".order-complete-button").css("visibility", "hidden");
-        }
-
-      },
-      error: function() {
-        console.log("Error updating pick list");
-        console.log(json);
-      }
-    });
-
-  }
-
-
 
 
   // update the picked quantity for the selected item
@@ -47463,32 +47447,6 @@ function displayPickList(orderNumber) {
 
 
   });
-
-}
-
-
-// HTML PARTIALS
-// *************
-
-
-// navbar / header
-function getNavbarHTML() {
-
-  var html = `
-  <header>
-
-    <div class="navbar-fixed">
-      <nav>
-        <div class="nav-wrapper blue-grey darken-3">
-          <a class="brand-logo">PKLST</a>
-        </div>
-      </nav>
-    </div>
-
-  </header>
-  `
-
-  return html;
 
 }
 
