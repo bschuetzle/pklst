@@ -25,6 +25,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 const fileUpload = require('express-fileupload');
 app.use(fileUpload());
 
+
+
 /***************
  * VIEW ROUTES *
  ***************/

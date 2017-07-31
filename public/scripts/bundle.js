@@ -46875,7 +46875,7 @@ module.exports = UnicodeTrie;
 },{"tiny-inflate":229}],233:[function(require,module,exports){
 
 
-// imports for pdf generation
+// imports needed for pdf generation
 var PDF = require('pdfkit');
 var fs = require('fs');
 
@@ -46885,8 +46885,6 @@ var pickList;         // holds array of pick item objects (json)
 var order = {};       // holds data about the order - orderNumber, customerName, productItemNumber, productDescription
 var pickList = {};    // holds data about the pick list - status, total ordered, total picked, etc.
 var pdfUrl            // holds url of pdf e.g. blob:http://localhost:3000/14468788-4d9a-45a7-be8e-2aa47dd8e3e6
-var currentPage = 1   // keep track of the current page / step
-
 
 
 // when index.html has finished loading
@@ -46899,22 +46897,6 @@ $(document).ready(function() {
   renderHomePage();
 
 });
-
-
-
-// MODAL TESTING
-$(document).on("click", ".modal-test-button", function(e) {
-  $('#modal1').modal('open');
-});
-
-$(document).on("click", ".modal-cancel-button", function(e) {
-  console.log("cancel modal button clicked");
-});
-
-$(document).on("click", ".modal-complete-button", function(e) {
-  console.log("complete modal button clicked");
-});
-// MODAL TESTING
 
 
 function renderHomePage() {
@@ -46983,7 +46965,7 @@ $(document).on("click", ".order-search-button", function(e) {
           order.orderStatus = json[0].orderStatus;
           order.pickedItemsImgFile = json[0].pickedItemsImgFile;
           if (order.orderStatus == "picked") {
-            displayErrorMsg("alert", "Error:", `The order number '${orderNumber}' has already been picked.`);
+            displayErrorMsg("alert", "Error:", `The order '${orderNumber}' has already been picked.`);
           } else {
             hideErrorMsg();
             retrievePickList(orderNumber);
@@ -46991,7 +46973,7 @@ $(document).on("click", ".order-search-button", function(e) {
         }
         // if the order was not found, show an error message
         else {
-          displayErrorMsg("alert", "Error:", `The order number '${orderNumber}' could not be found.`);
+          displayErrorMsg("alert", "Error:", `The order '${orderNumber}' could not be found.`);
         }
       },
       // TODO: if there was a problem with the ajax call, show an error message with the details
@@ -47430,7 +47412,20 @@ function displayPickList(orderNumber) {
 
 
   $(document).on("click", ".order-complete-button", function(e) {
-    console.log("complete button clicked");
+
+    $('#modal1').modal('open');
+
+  });
+
+
+  $(document).on("click", ".modal-complete-button", function(e) {
+
+    completeOrder();
+
+  });
+
+
+  function completeOrder() {
 
     $.ajax({
       method: 'POST',
@@ -47443,10 +47438,11 @@ function displayPickList(orderNumber) {
       error: function() {
         console.log("error updating order");
       }
+
     });
 
+  }
 
-  });
 
 }
 
