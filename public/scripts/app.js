@@ -44,108 +44,29 @@ $(document).on("click", ".modal-complete-button", function(e) {
 
 function renderHomePage() {
 
-  var html = `
-
-    <header>
-
-      <div class="navbar-fixed">
-        <nav>
-          <div class="nav-wrapper blue-grey darken-3">
-            <a class="brand-logo">PKLST</a>
-          </div>
-        </nav>
-      </div>
-
-    </header>
-
-    <main>
-
-      <div class="container search-page-container">
-
-        <div class="row search-row">
-          <div class="col s6 offset-s3 order-search-label">
-            Order Number
-          </div>
-          <div class="col s5 offset-s3">
-            <div class="input-field">
-              <input type="text" class="order-search-input" placeholder="scan order number">
-            </div>
-          </div>
-          <div class="col s1">
-            <button type="button" class="btn waves-effect grey darken-1 order-search-button">
-              <i class="large material-icons center order-search-icon">search</i>
-            </button>
-          </div>
-          <div class="col s6 offset-s3">
-            <div class="alert-container">
-              <div data-closable class="callout alert-callout-subtle alert">
-                <strong>Error!</strong>  Alert Alert
-              </div>
-            </div>
-          </div>
-        </div>
-
-
-      </div>
-
-
-    </main>
-
-
-    <footer class="page-footer blue-grey lighten-5">
-
-      <div class="container footer-container">
-
-        <i class="fa fa-file-text-o fa-2x footer-icon footer-page-1-icon" aria-hidden="true"></i>
-        <a class="footer-text footer-page-1-text">Enter Order</a>
-
-        <i class="fa fa-long-arrow-right fa-2x footer-arrow footer-page-2-arrow" aria-hidden="true"></i>
-        <i class="fa fa-print fa-2x footer-icon footer-page-2-icon" aria-hidden="true"></i>
-        <a class="footer-text footer-page-2-text">Print Pick List</a>
-
-        <i class="fa fa-long-arrow-right fa-2x footer-arrow footer-page-3-arrow" aria-hidden="true"></i>
-        <i class="fa fa-file-image-o fa-2x footer-icon footer-page-3-icon" aria-hidden="true"></i>
-        <a class="footer-text footer-page-3-text">Upload Image</a>
-
-        <i class="fa fa-long-arrow-right fa-2x footer-arrow footer-page-4-arrow" aria-hidden="true"></i>
-        <i class="fa fa-check-square-o fa-2x footer-icon footer-page-4-icon" aria-hidden="true"></i>
-        <a class="footer-text footer-page-4-text">Pick Items</a>
-
-      </div>
-
-    </footer>
-
-
-
-  `
-
-  $("body").empty();
-  $("body").append(html);
-
+  $(".order-search-input").val("");
+  $(".picklist-page").css("display", "none");
+  $(".home-page").css("display", "inline");
   setFocusOnOrderInput();
-
-  setFooterItemsFormat([1]);
-
+  setFooterItemsFormat([]);
 
 }
 
 
 function setFooterItemsFormat(pagesArr) {
-
-  var color = "#00796b"
-
-  for (var i = 0; i < pagesArr.length; i++) {
-
-    var $iconEl = $(`.footer-page-${pagesArr[i]}-text`);
-    var $textEl = $(`.footer-page-${pagesArr[i]}-icon`);
-    var $arrowEl = $(`.footer-page-${pagesArr[i]}-arrow`);
-
-    $iconEl.css("color", color);
-    $textEl.css("color", color);
-    $arrowEl.css("color", color);
-
+  var numPages = 4;
+  var color = "grey"
+  for (var i = 1; i <= numPages; i++) {
+    $(`.footer-page-${[i]}-text`).css("color", color);
+    $(`.footer-page-${[i]}-icon`).css("color", color);
+    $(`.footer-page-${[i]}-arrow`).css("color", color);
   }
-
+  var color = "#00796b"
+  for (var i = 0; i < pagesArr.length; i++) {
+    $(`.footer-page-${pagesArr[i]}-text`).css("color", color);
+    $(`.footer-page-${pagesArr[i]}-icon`).css("color", color);
+    $(`.footer-page-${pagesArr[i]}-arrow`).css("color", color);
+  }
 }
 
 // move the focus / set the cursor in the order input textbox
@@ -171,10 +92,7 @@ $(document).on("click", ".order-search-button", function(e) {
   orderNumber = $(".order-search-input").val();
   // show the warning message if an order number was not entered / scanned
   if (orderNumber == "") {
-    $(".alert-callout-subtle").removeClass("alert warning");
-    $(".alert-callout-subtle").addClass("warning");
-    $(".alert-callout-subtle.warning").html(`<strong>Oops!</strong> Please enter an order number.`);
-    $(".alert-callout-subtle.warning").css("display", "block");
+    displayErrorMsg("warning", "Oops!", "Please enter an order number.");
   }
   // attempt to find the order
   else {
@@ -190,31 +108,41 @@ $(document).on("click", ".order-search-button", function(e) {
           order.orderStatus = json[0].orderStatus;
           order.pickedItemsImgFile = json[0].pickedItemsImgFile;
           if (order.orderStatus == "picked") {
-            $(".alert-callout-subtle").removeClass("alert warning");
-            $(".alert-callout-subtle").addClass("alert");
-            $(".alert-callout-subtle.alert").html(`<strong>Error:</strong> The order number '${orderNumber}' has already been picked.`);
-            $(".alert-callout-subtle.alert").css("display", "block");
+            displayErrorMsg("alert", "Error:", `The order number '${orderNumber}' has already been picked.`);
           } else {
+            hideErrorMsg();
             retrievePickList(orderNumber);
           }
         }
         // if the order was not found, show an error message
         else {
-          $(".alert-callout-subtle").removeClass("alert warning");
-          $(".alert-callout-subtle").addClass("alert");
-          $(".alert-callout-subtle.alert").html(`<strong>Error:</strong> The order number '${orderNumber}' could not be found.`);
-          $(".alert-callout-subtle.alert").css("display", "block");
+          displayErrorMsg("alert", "Error:", `The order number '${orderNumber}' could not be found.`);
         }
       },
       // TODO: if there was a problem with the ajax call, show an error message with the details
-      error: function() {
-        $(".order-search-msg").append("Error: some other error");
+      error: function(err) {
+        console.log("error:", err);
       }
     });
 
   }
 
 });
+
+
+function displayErrorMsg(type, prefix, message) {
+
+  $(".alert-callout-subtle").removeClass("alert warning");
+  $(".alert-callout-subtle").addClass(type);
+  $(`.alert-callout-subtle.${type}`).html(`<strong>${prefix}</strong> ${message}`);
+  $(`.alert-callout-subtle.${type}`).css("display", "block");
+
+}
+
+function hideErrorMsg() {
+  $(".alert-callout-subtle.alert").css("display", "none");
+  $(".alert-callout-subtle.warning").css("display", "none");
+}
 
 
 function retrievePickList(orderNumber) {
@@ -238,13 +166,14 @@ function retrievePickList(orderNumber) {
 
 
 function findMainProduct(json) {
+
   json.forEach(function (element) {
     if (element.itemType == "main") {
       order.productItemNumber = element.itemNumber;
       order.productDescription = element.description;
     }
   });
-  console.log(order);
+
 }
 
 
@@ -290,178 +219,34 @@ function generatePDFDoc(json) {
 
   });
 
-  console.log("pdf generated");
-
 }
 
 
 function renderPDFPrintPage(url) {
 
-  var html = `
-
-    <header>
-
-      <div class="navbar-fixed">
-        <nav>
-          <div class="nav-wrapper blue-grey darken-3">
-            <a class="brand-logo">PKLST</a>
-          </div>
-        </nav>
-      </div>
-
-    </header>
-
-    <main>
-
-      <div class="container">
-        <div class="row">
-          <div class="col s12 header-container">
-
-            <a class="waves-effect waves-light grey darken-1 btn tooltipped print-button" data-position="top" data-delay="50" data-tooltip="I am a tooltip"><i class="material-icons left">print</i>Print</a>
-            <a class="waves-effect waves-light grey darken-1 btn continue-button"><i class="material-icons left">keyboard_tab</i>Continue</a>
-
-          </div>
-        </div>
-      </div>
-
-
-      <div class="container">
-        <div class="row">
-          <div class="col s12 iframe-container">
-            <iframe class="pdf-frame" style="border:1px solid grey" title="PDF in an i-Frame" src="" frameborder="1" scrolling="auto" height="1100" width="850" align="center" >
-            </iframe>
-          </div>
-        </div>
-      </div>
-
-    </main>
-
-    <footer class="page-footer blue-grey lighten-5">
-
-      <div class="container footer-container">
-
-        <i class="fa fa-file-text-o fa-2x footer-icon footer-page-1-icon" aria-hidden="true"></i>
-        <a class="footer-text footer-page-1-text">Enter Order</a>
-
-        <i class="fa fa-long-arrow-right fa-2x footer-arrow footer-page-2-arrow" aria-hidden="true"></i>
-        <i class="fa fa-print fa-2x footer-icon footer-page-2-icon" aria-hidden="true"></i>
-        <a class="footer-text footer-page-2-text">Print Pick List</a>
-
-        <i class="fa fa-long-arrow-right fa-2x footer-arrow footer-page-3-arrow" aria-hidden="true"></i>
-        <i class="fa fa-file-image-o fa-2x footer-icon footer-page-3-icon" aria-hidden="true"></i>
-        <a class="footer-text footer-page-3-text">Upload Image</a>
-
-        <i class="fa fa-long-arrow-right fa-2x footer-arrow footer-page-4-arrow" aria-hidden="true"></i>
-        <i class="fa fa-check-square-o fa-2x footer-icon footer-page-4-icon" aria-hidden="true"></i>
-        <a class="footer-text footer-page-4-text">Pick Items</a>
-
-      </div>
-
-    </footer>
-
-  `
-
-  $("body").empty();
-  $("body").append(html);
-  // console.log("pdf url:", url);
+  $(".home-page").css("display", "none");
+  $(".pdf-print-page").css("display", "inline");
 
   $(".pdf-frame").attr("src", url);
 
-  setFooterItemsFormat([1,2]);
+  setFooterItemsFormat([1]);
 
 }
-
 
 
 // move from the pick list pdf print page to the image upload page
 $(document).on("click", ".continue-button", function(e) {
 
-  var html = `
+  $(".pdf-print-page").css("display", "none");
+  $(".image-upload-page").css("display", "inline");
 
-    <header>
-
-      <div class="navbar-fixed">
-        <nav>
-          <div class="nav-wrapper blue-grey darken-3">
-            <a class="brand-logo">PKLST</a>
-          </div>
-        </nav>
-      </div>
-
-    </header>
-
-
-    <main>
-
-      <div class="container">
-        <div class="row">
-          <div class="col s6 push-s3 header-container">
-
-            <div class="file-field input-field">
-              <div class="btn grey darken-1">
-                <i class="material-icons left">image</i>
-                <span>Select Image</span>
-                <input class="file-picker" type="file" name="sampleFile">
-              </div>
-              <div class="file-path-wrapper">
-                <input class="file-path validate" type="text">
-              </div>
-            </div>
-
-          </div>
-        </div>
-
-        <div class="row">
-          <div class="col s12 image-container">
-            <a class="waves-effect waves-light light-green darken-3 btn image-upload-button"><i class="material-icons left">save</i>Save & Continue</a>
-            <img class="picked-items-image" src="#" alt="" />
-          </div>
-        </div>
-
-      </div>
-
-    </main>
-
-
-    <footer class="page-footer blue-grey lighten-5">
-
-      <div class="container footer-container">
-
-        <i class="fa fa-file-text-o fa-2x footer-icon footer-page-1-icon" aria-hidden="true"></i>
-        <a class="footer-text footer-page-1-text">Enter Order</a>
-
-        <i class="fa fa-long-arrow-right fa-2x footer-arrow footer-page-2-arrow" aria-hidden="true"></i>
-        <i class="fa fa-print fa-2x footer-icon footer-page-2-icon" aria-hidden="true"></i>
-        <a class="footer-text footer-page-2-text">Print Pick List</a>
-
-        <i class="fa fa-long-arrow-right fa-2x footer-arrow footer-page-3-arrow" aria-hidden="true"></i>
-        <i class="fa fa-file-image-o fa-2x footer-icon footer-page-3-icon" aria-hidden="true"></i>
-        <a class="footer-text footer-page-3-text">Upload Image</a>
-
-        <i class="fa fa-long-arrow-right fa-2x footer-arrow footer-page-4-arrow" aria-hidden="true"></i>
-        <i class="fa fa-check-square-o fa-2x footer-icon footer-page-4-icon" aria-hidden="true"></i>
-        <a class="footer-text footer-page-4-text">Pick Items</a>
-
-      </div>
-
-    </footer>
-
-
-  `
-
-  $("body").empty();
-  $("body").append(html);
-
-  setFooterItemsFormat([1,2,3]);
-
+  setFooterItemsFormat([1,2]);
 
 });
 
 
 // preview image and show save button when a file is chosen or has changed
 $(document).on("change", ".file-picker", function(e) {
-
-  console.log("selected file changed");
 
   var image = $(".file-picker")[0].files[0];
 
@@ -475,7 +260,6 @@ $(document).on("change", ".file-picker", function(e) {
   $(".image-upload-button").css("visibility", "visible");
   $(".picked-items-image").css("visibility", "visible");
 
-
 });
 
 
@@ -484,10 +268,6 @@ $(document).on("click", ".image-upload-button", function(e) {
 
   var formData = new FormData();
   formData.append('file', $('.file-picker')[0].files[0]);
-  // var file = $('.file-picker')[0].files[0];
-
-  // console.log(file);
-  // console.log(formData);
 
   $.ajax({
     method: 'POST',
@@ -514,97 +294,9 @@ function displayPickList(orderNumber) {
     success: function(json) {
 
       pickList = json;
-      console.log("Pick List:");
-      console.log(pickList);
 
-      var htmlHeader = `
+      tableBody = "";
 
-        <header>
-
-          <div class="navbar-fixed">
-            <nav>
-              <div class="nav-wrapper blue-grey darken-3">
-                <a class="brand-logo">PKLST</a>
-              </div>
-            </nav>
-          </div>
-
-        </header>
-
-
-        <main>
-
-          <div class="container item-search-container">
-            <div class="row">
-
-              <div class="col s12 order-search-label">
-                <div class="pick-list-status">In Process</div>
-              </div>
-
-              <div class="col s12 order-search-label">
-                Item Number
-              </div>
-
-
-              <div class="col s3">
-
-                <div class="input-field">
-                  <input type="text" class="item-search-input" placeholder="scan item number">
-                </div>
-
-              </div>
-
-              <div class="col s9">
-
-                <button type="button" class="btn waves-effect grey darken-1 picklist-buttons item-pack-button">Pack
-                  <i class="large material-icons right" item-search-icon>file_download</i>
-                </button>
-
-                <button type="button" class="btn waves-effect grey darken-1 picklist-buttons item-unpack-button">Unpack
-                  <i class="large material-icons right" item-search-icon>file_upload</i>
-                </button>
-
-                <button type="button" class="btn waves-effect grey darken-1 picklist-buttons order-complete-button">Complete
-                  <i class="large material-icons right" item-search-icon>check_box</i>
-                </button>
-
-              </div>
-
-
-
-
-
-              <div class="col s12">
-                <div class="alert-container">
-                  <div data-closable class="callout alert-callout-subtle alert">
-                    <strong>Error!</strong>  Alert Alert
-                  </div>
-                </div>
-              </div>
-
-            </div>
-
-          </div>
-
-      `
-
-      var htmlList = `
-        <div class="container pick-list-container">
-          <div class="row pick-list-row">
-            <div class="col s12 pick-list-column">
-              <table class="highlight bordered">
-                <thead>
-                  <tr>
-                    <th style="text-align:center">Status</th>
-                    <th>Item Number</th>
-                    <th>Description</th>
-                    <th style="text-align:center">Ordered Qty</th>
-                    <th style="text-align:center">Picked Qty</th>
-                  </tr>
-                </thead>
-
-                <tbody>
-      `
       json.forEach(function(element, index) {
 
         if (element.pickedQty == element.orderedQty) {
@@ -612,10 +304,10 @@ function displayPickList(orderNumber) {
           var color = `style="color: green;"`
         } else {
           var icon = "error_outline";
-          var color = ""
+          var color = `style="color: red;"`
         }
 
-        htmlList = htmlList + `
+        tableBody = tableBody + `
           <tr class="picklist-row" data-id="${element.itemID}">
             <td class="picklist-item status" style="text-align:center" data-id="${element.itemID}"><i class="small material-icons center pick-status-icon" data-id="${element.itemID}" ${color}>${icon}</i></td>
             <td class="picklist-item item-number" data-id="${element.itemID}">${element.itemNumber}</td>
@@ -624,53 +316,20 @@ function displayPickList(orderNumber) {
             <td class="picklist-item pickedQty" style="text-align:center" data-id="${element.itemID}">${element.pickedQty}</td>
           </tr>
         `
+
       });
 
-      htmlList = htmlList + `
-                  </tbody>
-                </table>
-              </div>
-            </div>
-        </div>
-      </main>
+      $(".table-body").empty();
+      $(".table-body").append(tableBody);
 
-      `
+      $(".image-upload-page").css("display", "none");
+      $(".picklist-page").css("display", "inline");
 
-      htmlFooter = `
-
-        <footer class="page-footer blue-grey lighten-5">
-
-          <div class="container footer-container">
-
-            <i class="fa fa-file-text-o fa-2x footer-icon footer-page-1-icon" aria-hidden="true"></i>
-            <a class="footer-text footer-page-1-text">Enter Order</a>
-
-            <i class="fa fa-long-arrow-right fa-2x footer-arrow footer-page-2-arrow" aria-hidden="true"></i>
-            <i class="fa fa-print fa-2x footer-icon footer-page-2-icon" aria-hidden="true"></i>
-            <a class="footer-text footer-page-2-text">Print Pick List</a>
-
-            <i class="fa fa-long-arrow-right fa-2x footer-arrow footer-page-3-arrow" aria-hidden="true"></i>
-            <i class="fa fa-file-image-o fa-2x footer-icon footer-page-3-icon" aria-hidden="true"></i>
-            <a class="footer-text footer-page-3-text">Upload Image</a>
-
-            <i class="fa fa-long-arrow-right fa-2x footer-arrow footer-page-4-arrow" aria-hidden="true"></i>
-            <i class="fa fa-check-square-o fa-2x footer-icon footer-page-4-icon" aria-hidden="true"></i>
-            <a class="footer-text footer-page-4-text">Pick Items</a>
-
-          </div>
-
-        </footer>
-
-      `
-
-      $("body").empty();
-      $("body").append(htmlHeader + htmlList + htmlFooter);
+      setFooterItemsFormat([1,2,3]);
 
       displayPickStatus();
 
       setFocusOnItemInput();
-
-      setFooterItemsFormat([1,2,3,4]);
 
       if (pickList.status == "Complete") {
         $(".order-complete-button").css("visibility", "visible");
@@ -683,7 +342,6 @@ function displayPickList(orderNumber) {
   });
 
 
-
   // if the enter key is pressed when the focus is on the item number input, automatically click the pack button
   $(document).on("keypress", ".item-search-input", function(e) {
     if (e.keyCode==13) {
@@ -691,87 +349,90 @@ function displayPickList(orderNumber) {
     }
   });
 
+
   $(document).on("click", ".item-pack-button", function(e) {
-    orderNumber = $(".picklist-order-number").text();
+
     itemNumber = $(".item-search-input").val();
-    console.log("Pack button clicked with order number: " + orderNumber + ", item number: " + itemNumber);
-    console.log(pickList);
-    var validation = findPickListItem(itemNumber);
-    console.log(validation);
-    console.log("Found? " + validation.found);
-    if (itemNumber == "") {
-      $(".alert-callout-subtle").removeClass("alert warning");
-      $(".alert-callout-subtle").addClass("warning");
-      $(".alert-callout-subtle.warning").html(`<strong>Oops!</strong> Please enter an item number.`);
-      $(".alert-callout-subtle.warning").css("display", "block");
-    } else if (!validation.found) {
-      $(".alert-callout-subtle").removeClass("alert warning");
-      $(".alert-callout-subtle").addClass("alert");
-      $(".alert-callout-subtle.alert").html(`<strong>Error:</strong> This item is not part of this order - do not pack it!`);
-      $(".alert-callout-subtle.alert").css("display", "block");
-    } else if (validation.pickedQty == validation.orderedQty) {
-      $(".alert-callout-subtle").removeClass("alert warning");
-      $(".alert-callout-subtle").addClass("alert");
-      $(".alert-callout-subtle.alert").html(`<strong>Error:</strong> This item has already been fully packed - do not pack it!`);
-      $(".alert-callout-subtle.alert").css("display", "block");
-    } else {
-      $(".alert-callout-subtle.alert").css("display", "none");
-      $(".alert-callout-subtle.warning").css("display", "none");
-      pickItem(validation.orderID, validation.itemID, validation.pickedQty + 1);
+    var itemInfo = getItemInfo(itemNumber);
+
+    console.log(itemInfo);
+    console.log(validateAction(itemNumber, "pack"));
+
+    if (validateAction(itemNumber, "pack")) {
+      updatePickList(itemInfo.orderID, itemInfo.itemID, itemInfo.pickedQty + 1);
     }
+
   });
 
 
   $(document).on("click", ".item-unpack-button", function(e) {
-    orderNumber = $(".picklist-order-number").text();
+
     itemNumber = $(".item-search-input").val();
-    console.log("Unpack button clicked with order number: " + orderNumber + ", item number: " + itemNumber);
-    console.log(pickList);
-    var validation = findPickListItem(itemNumber);
-    console.log(validation);
-    console.log("Found? " + validation.found);
-    if (itemNumber == "") {
-      $(".alert-callout-subtle").removeClass("alert warning");
-      $(".alert-callout-subtle").addClass("warning");
-      $(".alert-callout-subtle.warning").html(`<strong>Oops!</strong> Please enter an item number.`);
-      $(".alert-callout-subtle.warning").css("display", "block");
-    } else if (!validation.found) {
-      $(".alert-callout-subtle").removeClass("alert warning");
-      $(".alert-callout-subtle").addClass("alert");
-      $(".alert-callout-subtle.alert").html(`<strong>Error:</strong> This item is not part of this order.`);
-      $(".alert-callout-subtle.alert").css("display", "block");
-    } else if (validation.pickedQty == 0) {
-      $(".alert-callout-subtle").removeClass("alert warning");
-      $(".alert-callout-subtle").addClass("alert");
-      $(".alert-callout-subtle.alert").html(`<strong>Error:</strong> This item has already has not been packed yet.`);
-      $(".alert-callout-subtle.alert").css("display", "block");
-    } else {
-      $(".alert-callout-subtle.alert").css("display", "none");
-      $(".alert-callout-subtle.warning").css("display", "none");
-      unpickItem(validation.orderID, validation.itemID, validation.pickedQty - 1);
+    var itemInfo = getItemInfo(itemNumber);
+
+    console.log(itemInfo);
+    console.log(validateAction(itemNumber, "unpack"));
+
+    if (validateAction(itemNumber, "unpack")) {
+      updatePickList(itemInfo.orderID, itemInfo.itemID, itemInfo.pickedQty - 1);
     }
+
   });
 
-  
 
-  function findPickListItem(itemNumber) {
-    var results = {found: false, itemNumber: "", orderID: 0, itemID: 0, orderedQty: 0, pickedQty: 0};
+  function getItemInfo(itemNumber) {
+    var itemInfo = {found: false};
     pickList.forEach(function(element, index) {
-      // console.log("Item Number: " + element.itemNumber);
       if (element.itemNumber == itemNumber) {
-        results["found"] = true;
-        results["itemNumber"] = element.itemNumber;
-        results["orderedQty"] = element.orderedQty;
-        results["orderID"] = element.orderID;
-        results["itemID"] = element.itemID;
-        results["pickedQty"] = element.pickedQty;
-        // return results;
+        itemInfo.found = true;
+        itemInfo.itemNumber = element.itemNumber;
+        itemInfo.orderedQty = element.orderedQty;
+        itemInfo.orderID = element.orderID;
+        itemInfo.itemID = element.itemID;
+        itemInfo.pickedQty = element.pickedQty;
       }
     });
-    return results;
+    return itemInfo;
   }
 
-  function pickItem(orderID, itemID, pickedQty) {
+
+  function validateAction(itemNumber, action) {
+
+    if (itemNumber == "") {
+      displayErrorMsg("warning", "Oops!", `Please enter an item number.`);
+      return false;
+    }
+
+    var foundInList = false;
+    var hasError = false;
+
+    pickList.forEach(function(element) {
+      if (element.itemNumber == itemNumber) {
+        foundInList = true;
+        if (action == "pack" && (element.pickedQty == element.orderedQty)) {
+          displayErrorMsg("alert", "Error:", `The item '${itemNumber}' has already been fully packed - do not pack it!`);
+          hasError = true;
+        } else if (action == "unpack" && (element.pickedQty == 0)) {
+          displayErrorMsg("alert", "Error:", `The item '${itemNumber}' has not been packed yet.`);
+          hasError = true;
+        }
+      }
+    });
+
+    if (hasError) {
+      return false;
+    } else if (!foundInList) {
+      displayErrorMsg("alert", "Error:", `The item '${itemNumber}' is not part of this order.`);
+      return false;
+    } else {
+      hideErrorMsg();
+      return true;
+    }
+
+  }
+
+
+  function updatePickList(orderID, itemID, pickedQty) {
 
     $.ajax({
       method: 'PUT',
@@ -797,38 +458,6 @@ function displayPickList(orderNumber) {
     });
 
   }
-
-
-  function unpickItem(orderID, itemID, pickedQty) {
-
-    $.ajax({
-      method: 'PUT',
-      url: `/api/picked_items/${orderID}/${itemID}/${pickedQty}`,
-      success: function(json) {
-        console.log("Success updating pick list");
-        console.log(json);
-        updateCachedPickList(itemID, pickedQty);
-        displayPickStatus();
-        updateDisplayedPickList(itemID, pickedQty);
-        flashPickedItem(itemID, pickedQty);
-        returnFocusToItemNumber();
-        displayPickCountToast();
-        if (pickList.status == "Complete") {
-          $(".order-complete-button").css("visibility", "visible");
-        } else {
-          $(".order-complete-button").css("visibility", "hidden");
-        }
-
-      },
-      error: function() {
-        console.log("Error updating pick list");
-        console.log(json);
-      }
-    });
-
-  }
-
-
 
 
   // update the picked quantity for the selected item
