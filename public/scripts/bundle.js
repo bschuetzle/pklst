@@ -47198,7 +47198,6 @@ function displayPickList(orderNumber) {
   });
 
 
-
   // if the enter key is pressed when the focus is on the item number input, automatically click the pack button
   $(document).on("keypress", ".item-search-input", function(e) {
     if (e.keyCode==13) {
@@ -47206,76 +47205,91 @@ function displayPickList(orderNumber) {
     }
   });
 
+
   $(document).on("click", ".item-pack-button", function(e) {
-    orderNumber = $(".picklist-order-number").text();
+
     itemNumber = $(".item-search-input").val();
-    console.log("Pack button clicked with order number: " + orderNumber + ", item number: " + itemNumber);
-    console.log(pickList);
-    var validation = findPickListItem(itemNumber);
-    console.log(validation);
-    console.log("Found? " + validation.found);
-    if (itemNumber == "") {
-      displayErrorMsg("warning", "Oops!", `Please enter an item number.`);
-    } else if (!validation.found) {
-      displayErrorMsg("alert", "Error:", `The item '${itemNumber}' is not part of this order - do not pack it!`);
-    } else if (validation.pickedQty == validation.orderedQty) {
-      displayErrorMsg("alert", "Error:", `The item '${itemNumber}' has already been fully packed - do not pack it!`);
-    } else {
-      $(".alert-callout-subtle.alert").css("display", "none");
-      $(".alert-callout-subtle.warning").css("display", "none");
-      pickItem(validation.orderID, validation.itemID, validation.pickedQty + 1);
+    var itemInfo = getItemInfo(itemNumber);
+
+    console.log(itemInfo);
+    console.log(validateAction(itemNumber, "pack"));
+
+    if (validateAction(itemNumber, "pack")) {
+      pickItem(itemInfo.orderID, itemInfo.itemID, itemInfo.pickedQty + 1);
     }
+
   });
 
 
   $(document).on("click", ".item-unpack-button", function(e) {
-    orderNumber = $(".picklist-order-number").text();
+
     itemNumber = $(".item-search-input").val();
-    console.log("Unpack button clicked with order number: " + orderNumber + ", item number: " + itemNumber);
-    console.log(pickList);
-    var validation = findPickListItem(itemNumber);
-    console.log(validation);
-    console.log("Found? " + validation.found);
-    if (itemNumber == "") {
-      $(".alert-callout-subtle").removeClass("alert warning");
-      $(".alert-callout-subtle").addClass("warning");
-      $(".alert-callout-subtle.warning").html(`<strong>Oops!</strong> Please enter an item number.`);
-      $(".alert-callout-subtle.warning").css("display", "block");
-    } else if (!validation.found) {
-      $(".alert-callout-subtle").removeClass("alert warning");
-      $(".alert-callout-subtle").addClass("alert");
-      $(".alert-callout-subtle.alert").html(`<strong>Error:</strong> This item is not part of this order.`);
-      $(".alert-callout-subtle.alert").css("display", "block");
-    } else if (validation.pickedQty == 0) {
-      $(".alert-callout-subtle").removeClass("alert warning");
-      $(".alert-callout-subtle").addClass("alert");
-      $(".alert-callout-subtle.alert").html(`<strong>Error:</strong> This item has already has not been packed yet.`);
-      $(".alert-callout-subtle.alert").css("display", "block");
-    } else {
-      $(".alert-callout-subtle.alert").css("display", "none");
-      $(".alert-callout-subtle.warning").css("display", "none");
-      unpickItem(validation.orderID, validation.itemID, validation.pickedQty - 1);
+    var itemInfo = getItemInfo(itemNumber);
+
+    console.log(itemInfo);
+    console.log(validateAction(itemNumber, "unpack"));
+
+    if (validateAction(itemNumber, "unpack")) {
+      unpickItem(itemInfo.orderID, itemInfo.itemID, itemInfo.pickedQty - 1);
     }
+
   });
 
 
-
-  function findPickListItem(itemNumber) {
-    var results = {found: false, itemNumber: "", orderID: 0, itemID: 0, orderedQty: 0, pickedQty: 0};
+  function getItemInfo(itemNumber) {
+    var itemInfo = {found: false};
     pickList.forEach(function(element, index) {
-      // console.log("Item Number: " + element.itemNumber);
       if (element.itemNumber == itemNumber) {
-        results["found"] = true;
-        results["itemNumber"] = element.itemNumber;
-        results["orderedQty"] = element.orderedQty;
-        results["orderID"] = element.orderID;
-        results["itemID"] = element.itemID;
-        results["pickedQty"] = element.pickedQty;
-        // return results;
+        itemInfo.found = true;
+        itemInfo.itemNumber = element.itemNumber;
+        itemInfo.orderedQty = element.orderedQty;
+        itemInfo.orderID = element.orderID;
+        itemInfo.itemID = element.itemID;
+        itemInfo.pickedQty = element.pickedQty;
       }
     });
-    return results;
+    return itemInfo;
   }
+
+
+  function validateAction(itemNumber, action) {
+
+    if (itemNumber == "") {
+      displayErrorMsg("warning", "Oops!", `Please enter an item number.`);
+      return false;
+    }
+
+    var foundInList = false;
+    var hasError = false;
+
+    pickList.forEach(function(element) {
+      if (element.itemNumber == itemNumber) {
+        foundInList = true;
+        if (action == "pack" && (element.pickedQty == element.orderedQty)) {
+          displayErrorMsg("alert", "Error:", `The item '${itemNumber}' has already been fully packed - do not pack it!`);
+          hasError = true;
+        } else if (action == "unpack" && (element.pickedQty == 0)) {
+          displayErrorMsg("alert", "Error:", `The item '${itemNumber}' has not been packed yet.`);
+          hasError = true;
+        }
+      }
+    });
+
+    if (hasError) {
+      return false;
+    } else if (!foundInList) {
+      displayErrorMsg("alert", "Error:", `The item '${itemNumber}' is not part of this order.`);
+      return false;
+    } else {
+      $(".alert-callout-subtle.alert").css("display", "none");
+      $(".alert-callout-subtle.warning").css("display", "none");
+      return true;
+    }
+
+  }
+
+
+
 
   function pickItem(orderID, itemID, pickedQty) {
 
@@ -47303,7 +47317,7 @@ function displayPickList(orderNumber) {
     });
 
   }
-  
+
 
   function unpickItem(orderID, itemID, pickedQty) {
 
