@@ -39,10 +39,10 @@ app.get('/', function homepage(req, res) {
    res.sendFile(__dirname + '/views/index.html');
 });
 
-// temp checkbox testing
-app.get('/checkbox', function homepage(req, res) {
-   res.sendFile(__dirname + '/views/checkbox.html');
-});
+// // temp image testing
+// app.get('/image', function homepage(req, res) {
+//    res.sendFile('/pick_images/1501602925200IMG_0048.JPG');
+// });
 
 
 /**************

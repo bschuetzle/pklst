@@ -47115,6 +47115,8 @@ $(document).on("click", ".continue-button", function(e) {
   $(".pdf-print-page").css("display", "none");
   $(".image-upload-page").css("display", "inline");
 
+  // Materialize.updateTextFields();
+
   setFooterItemsFormat([1,2]);
 
 });
@@ -47129,11 +47131,10 @@ $(document).on("change", ".file-picker", function(e) {
   reader.onload = function (e) {
     $('.picked-items-image').attr('src', e.target.result);
   }
-
   reader.readAsDataURL(image);
 
   $(".image-upload-button").css("visibility", "visible");
-  $(".picked-items-image").attr("data-caption", `Order Number: ${order.orderNumber}   -   Number of Items: ${order.numItems}`);
+  $(".picked-items-image").attr("data-caption", `Order Number: ${order.orderNumber} ---- Number of Items: ${order.numItems}`);
 
 });
 
@@ -47151,6 +47152,8 @@ $(document).on("click", ".image-upload-button", function(e) {
     processData: false,
     contentType: false,
     success: function(json) {
+      $(".image-upload-button").css("visibility", "hidden");
+      $(".picked-items-image").attr("src", "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==");
       displayPickList(order.orderNumber);
     },
     error: function() {
