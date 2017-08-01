@@ -20,21 +20,21 @@ PKLST is a warehouse management application that handles the picking and packing
 
 Home Page
 
-<img src="https://dl.dropboxusercontent.com/s/0cdlgvgllmjncqc/home-page.png?dl=0" width="300">
+<img src="https://dl.dropboxusercontent.com/s/0cdlgvgllmjncqc/home-page.png?dl=0" width="500">
 
 Print Pick List Page
 
-<img src="https://dl.dropboxusercontent.com/s/3x8cs9au6tm9sfq/print-page.png?dl=0" width="300">
+<img src="https://dl.dropboxusercontent.com/s/3x8cs9au6tm9sfq/print-page.png?dl=0" width="500">
 
 
 Upload Image Page
 
-<img src="https://dl.dropboxusercontent.com/s/fjhgbl2ndrm4wqs/upload-image-page.png?dl=0" width="300">
+<img src="https://dl.dropboxusercontent.com/s/fjhgbl2ndrm4wqs/upload-image-page.png?dl=0" width="500">
 
 
 Pick & Pack Page
 
-<img src="https://dl.dropboxusercontent.com/s/40083l2o3hji11h/pick-pack-page.png?dl=0" width="300">
+<img src="https://dl.dropboxusercontent.com/s/40083l2o3hji11h/pick-pack-page.png?dl=0" width="500">
 
 
 ## Planned New Features
