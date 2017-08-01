@@ -46881,10 +46881,10 @@ var fs = require('fs');
 
 
 // global variables
-var pickList;         // holds array of pick item objects (json)
-var order = {};       // holds data about the order - orderNumber, customerName, productItemNumber, productDescription
-var pickList = {};    // holds data about the pick list - status, total ordered, total picked, etc.
-var pdfUrl            // holds url of pdf e.g. blob:http://localhost:3000/14468788-4d9a-45a7-be8e-2aa47dd8e3e6
+var order = {};            // holds data about the order - orderNumber, customerName, productItemNumber, productDescription
+var pickListItems;         // holds array of pick item objects (json)
+var pickListInfo = {};     // holds data about the pick list - status, total ordered, total picked, etc.
+var pdfUrl                 // holds url of pdf e.g. blob:http://localhost:3000/14468788-4d9a-45a7-be8e-2aa47dd8e3e6
 
 
 // when index.html has finished loading
@@ -46911,19 +46911,23 @@ function renderHomePage() {
 
 
 function setFooterItemsFormat(pagesArr) {
+
   var numPages = 4;
+
   var color = "grey"
   for (var i = 1; i <= numPages; i++) {
     $(`.footer-page-${[i]}-text`).css("color", color);
     $(`.footer-page-${[i]}-icon`).css("color", color);
     $(`.footer-page-${[i]}-arrow`).css("color", color);
   }
+
   var color = "#558b2f"
   for (var i = 0; i < pagesArr.length; i++) {
     $(`.footer-page-${pagesArr[i]}-text`).css("color", color);
     $(`.footer-page-${pagesArr[i]}-icon`).css("color", color);
     $(`.footer-page-${pagesArr[i]}-arrow`).css("color", color);
   }
+
 }
 
 // move the focus / set the cursor in the order input textbox
@@ -47009,10 +47013,9 @@ function retrievePickList(orderNumber) {
     url: '/api/ordered_items/' + orderNumber,
     success: function(json) {
       // save/cache response data in global variable
-      pickList = json;
+      pickListItems = json;
       findMainProduct(json);
       generatePDFDoc(json);
-      console.log(pickList);
     },
     error: function() {
       console.log("error getting data");
@@ -47150,7 +47153,7 @@ function displayPickList(orderNumber) {
     url: '/api/ordered_items/' + orderNumber,
     success: function(json) {
 
-      pickList = json;
+      pickListItems = json;
 
       tableBody = "";
 
@@ -47188,7 +47191,7 @@ function displayPickList(orderNumber) {
 
       setFocusOnItemInput();
 
-      if (pickList.status == "Complete") {
+      if (pickListInfo.status == "Complete") {
         $(".order-complete-button").css("visibility", "visible");
       }
 
@@ -47238,8 +47241,10 @@ function displayPickList(orderNumber) {
 
 
   function getItemInfo(itemNumber) {
+
     var itemInfo = {found: false};
-    pickList.forEach(function(element, index) {
+
+    pickListItems.forEach(function(element) {
       if (element.itemNumber == itemNumber) {
         itemInfo.found = true;
         itemInfo.itemNumber = element.itemNumber;
@@ -47249,7 +47254,9 @@ function displayPickList(orderNumber) {
         itemInfo.pickedQty = element.pickedQty;
       }
     });
+
     return itemInfo;
+
   }
 
 
@@ -47263,7 +47270,7 @@ function displayPickList(orderNumber) {
     var foundInList = false;
     var hasError = false;
 
-    pickList.forEach(function(element) {
+    pickListItems.forEach(function(element) {
       if (element.itemNumber == itemNumber) {
         foundInList = true;
         if (action == "pack" && (element.pickedQty == element.orderedQty)) {
@@ -47298,15 +47305,10 @@ function displayPickList(orderNumber) {
         console.log("Success updating pick list");
         console.log(json);
         updateCachedPickList(itemID, pickedQty);
-        updateDisplayedPickList(itemID, pickedQty);
-        flashPickedItem(itemID, pickedQty);
+        updatePickListRow(itemID, pickedQty);
         returnFocusToItemNumber();
         displayPickStatus();
         displayPickCountToast();
-        if (pickList.status == "Complete") {
-          $(".order-complete-button").css("visibility", "visible");
-        }
-
       },
       error: function() {
         console.log("Error updating pick list");
@@ -47317,41 +47319,33 @@ function displayPickList(orderNumber) {
   }
 
 
-  // update the picked quantity for the selected item
+  // update the picklist global variable for the item with the new picked qty
   function updateCachedPickList(itemID, pickedQty) {
 
-    pickList.forEach(function(element, index) {
+    pickListItems.forEach(function(element, index) {
       if (element.itemID == itemID) {
-        pickList[index].pickedQty = pickedQty;
+        pickListItems[index].pickedQty = pickedQty;
       }
     });
 
-    console.log(pickList);
-
   }
 
 
-  function updateDisplayedPickList(itemID, pickedQty) {
-
-    var $qtyEl = $(`.picklist-item.pickedQty[data-id='${itemID}']`);
-    $qtyEl.text(pickedQty);
-
-  }
-
-
-  function flashPickedItem(itemID, pickedQty) {
+  function updatePickListRow(itemID, pickedQty) {
 
     var orderedQty, pickedQty;
-    pickList.forEach(function(element, index) {
+
+    var $rowEl = $(`.picklist-row[data-id='${itemID}']`);
+    var $iconEl = $(`.pick-status-icon[data-id='${itemID}']`);
+    var $qtyEl = $(`.picklist-item.pickedQty[data-id='${itemID}']`);
+
+    pickListItems.forEach(function(element, index) {
       if (element.itemID == itemID) {
         orderedQty = element.orderedQty;
         pickedQty = element.pickedQty;
       }
     });
 
-    var $rowEl = $(`.picklist-row[data-id='${itemID}']`);
-    var $iconEl = $(`.pick-status-icon[data-id='${itemID}']`);
-    // $rowEl.css("color", "green");
     if (pickedQty == orderedQty) {
       $iconEl.text("check_circle");
       $iconEl.css("color", "green");
@@ -47360,24 +47354,31 @@ function displayPickList(orderNumber) {
       $iconEl.css("color", "red");
     }
 
+    $qtyEl.text(pickedQty);
+
 
   }
 
 
   function returnFocusToItemNumber() {
+
     $(".item-search-input").val("");
     $(".item-search-input").focus();
+
   }
 
 
   function displayPickStatus() {
+
     var totalOrderedQty = 0;
     var totalPickedQty = 0;
-    var status = "";
-    pickList.forEach(function(element, index) {
+    var status;
+
+    pickListItems.forEach(function(element) {
       totalOrderedQty += element.orderedQty;
       totalPickedQty += element.pickedQty;
     });
+
     if (totalPickedQty == 0) {
       status = "Not Started";
       $(".pick-list-status").css("background-color", "rgb(255, 198, 179)");
@@ -47388,26 +47389,25 @@ function displayPickList(orderNumber) {
       status = "Complete";
       $(".pick-list-status").css("background-color", "rgb(204, 255, 153)");
     }
-    pickList.totalOrderedQty = totalOrderedQty;
-    pickList.totalPickedQty = totalPickedQty;
-    pickList.status = status;
+
+    pickListInfo.totalOrderedQty = totalOrderedQty;
+    pickListInfo.totalPickedQty = totalPickedQty;
+    pickListInfo.status = status;
+
     $(".pick-list-status").text(status);
+
+    if (pickListInfo.status == "Complete") {
+      $(".order-complete-button").css("visibility", "visible");
+    }
 
   }
 
 
   function displayPickCountToast() {
-    var totalOrderedQty = 0;
-    var totalPickedQty = 0;
-    var message = "";
-    pickList.forEach(function(element) {
-      totalOrderedQty += element.orderedQty;
-      totalPickedQty += element.pickedQty;
-    });
-    message = `${totalPickedQty} of ${totalOrderedQty} items packed`;
-    pickList.totalOrderedQty = totalOrderedQty;
-    pickList.totalPickedQty = totalPickedQty;
+
+    message = `${pickListInfo.totalPickedQty} of ${pickListInfo.totalPickedQty} items packed`;
     Materialize.toast(message, 4000);
+
   }
 
 
