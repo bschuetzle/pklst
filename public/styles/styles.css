@@ -1,43 +1,12 @@
 
+
+/*****
+Navbar
+******/
+
 .brand-logo-icon {
   color: #e3ecd4;
-  font-size: 40px;
 }
-
-.page-footer {
-  position: fixed;
-  bottom: 0px;
-  height: 100px;
-  left: 0px;
-  right: 0px;
-  overflow: hidden;;
-}
-
-.footer-container {
-  text-align: center;
-  margin-top: 15px;
-}
-
-.footer-icon {
-  color: grey;
-}
-
-.footer-text {
-  font-family: "Roboto", sans-serif;
-  font-size: 16px;
-  color: grey;
-  margin: 10px;
-}
-
-.footer-arrow {
-  color: grey;
-  margin: 0 40px 0 25px;
-}
-
-.footer-text:hover {
-  cursor: pointer;
-}
-
 
 
 /****************
@@ -56,22 +25,12 @@ Order Search Page
   margin-top: 150px;
 }
 
-/*input[type=text]:not(.browser-default) {
-  border: 1px solid rgb(160,160,160);
-  padding-left: 20px;
-  display: inline-block;
-}*/
-
 .order-search-button {
   height: 47px;
   margin-top: 14px;
   display: inline-block;
 }
 
-/*.btn i {
-  font-size: 25px;
-  padding-top: 5px;
-}*/
 
 /*********
 Print Page
@@ -109,9 +68,10 @@ Image Upload Page
   width: 100%;
   height: 100%;
   overflow: hidden;
-  margin-bottom: 100px;
-  visibility: hidden;
+  margin-bottom: 200px;
+  visibility: visible;
 }
+
 
 /*************
 Pick List Page
@@ -146,12 +106,6 @@ Pick List Page
 
 .pick-status-icon {
   color: red;
-  /*transition: color 1s ease;*/
-}
-
-tr {
-  /*animation: fadeinout 4s linear 1 forwards;*/
-  transition: color 1s ease;
 }
 
 nav .brand-logo {
@@ -174,24 +128,58 @@ nav .brand-logo {
 }
 
 
+/* ***
+Footer
+*****/
 
+.page-footer {
+  position: fixed;
+  bottom: 0px;
+  height: 100px;
+  left: 0px;
+  right: 0px;
+  overflow: hidden;;
+}
 
-/*.table-header-orderedqty {
+.footer-container {
   text-align: center;
-}*/
+  margin-top: 15px;
+}
+
+.footer-icon {
+  color: grey;
+}
+
+.footer-text {
+  font-family: "Roboto", sans-serif;
+  font-size: 16px;
+  color: grey;
+  margin: 10px;
+}
+
+.footer-arrow {
+  color: grey;
+  margin: 0 40px 0 25px;
+}
+
+.footer-text:hover {
+  cursor: pointer;
+}
+
+
 
 /* ***********
 Foundation CSS
 *********** */
 
 .callout {
-    position: relative;
-    margin: 0 auto;
-    padding: 1rem;
-    border: 1px solid rgba(10, 10, 10, 0.25);
-    border-radius: 0;
-    background-color: white;
-    color: #0a0a0a;
+  position: relative;
+  margin: 0 auto;
+  padding: 1rem;
+  border: 1px solid rgba(10, 10, 10, 0.25);
+  border-radius: 0;
+  background-color: white;
+  color: #0a0a0a;
 }
 
 .alert-callout-subtle {
@@ -210,6 +198,8 @@ Foundation CSS
 }
 
 .alert-callout-subtle.alert {
+  font-family: "Roboto", sans-serif;
+  font-size: 16px;
   background: #e6e6e6;
   color: #8a8a8a;
   border-left: 0.3125rem solid #cc4b37;
@@ -219,16 +209,12 @@ Foundation CSS
 }
 
 .alert-callout-subtle.warning {
+  font-family: "Roboto", sans-serif;
+  font-size: 16px;
   background: #e6e6e6;
   color: #8a8a8a;
   border-left: 0.3125rem solid #ffae00;
   margin: 20px 0;
   visibility: visible;
   display: none;
-}
-
-.alert-callout-subtle.primary {
-  background: #e6e6e6;
-  color: #8a8a8a;
-  border-left: 0.3125rem solid #1779ba;
 }
