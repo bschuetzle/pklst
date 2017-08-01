@@ -361,6 +361,8 @@ function displayPickList(orderNumber) {
 
   $(document).on("click", ".item-pack-button", function(e) {
 
+    console.log("Pack button clicked");
+    
     itemNumber = $(".item-search-input").val();
     var itemInfo = getItemInfo(itemNumber);
 
