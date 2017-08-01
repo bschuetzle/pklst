@@ -530,7 +530,7 @@ function displayPickList(orderNumber) {
 
   function displayPickCountToast() {
 
-    message = `${pickListInfo.totalPickedQty} of ${pickListInfo.totalPickedQty} items packed`;
+    message = `${pickListInfo.totalPickedQty} of ${pickListInfo.totalOrderedQty} items packed`;
     Materialize.toast(message, 4000);
 
   }
@@ -568,5 +568,6 @@ function displayPickList(orderNumber) {
 
   }
 
+  // asdsadfdfa
 
 }
