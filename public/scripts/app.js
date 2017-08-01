@@ -240,6 +240,8 @@ $(document).on("click", ".continue-button", function(e) {
   $(".pdf-print-page").css("display", "none");
   $(".image-upload-page").css("display", "inline");
 
+  // Materialize.updateTextFields();
+
   setFooterItemsFormat([1,2]);
 
 });
