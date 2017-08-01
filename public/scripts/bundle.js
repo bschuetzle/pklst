@@ -46890,8 +46890,6 @@ var pdfUrl                 // holds url of pdf e.g. blob:http://localhost:3000/1
 // when index.html has finished loading
 $(document).ready(function() {
 
-  console.log("document is ready (in app.js)");
-
   $('.modal').modal();
   $('.materialboxed').materialbox();
 
@@ -46983,7 +46981,8 @@ $(document).on("click", ".order-search-button", function(e) {
       },
       // TODO: if there was a problem with the ajax call, show an error message with the details
       error: function(err) {
-        console.log("error:", err);
+        console.log("error:");
+        console.log(err);
       }
     });
 
@@ -47019,8 +47018,8 @@ function retrievePickList(orderNumber) {
       getNumberOfItems(json);
       generatePDFDoc(json);
     },
-    error: function() {
-      console.log("error getting data");
+    error: function(err) {
+      displayErrorMsg("alert", "Error:", `The order '${orderNumber}' could not be retrieved.`);
     }
   });
 
@@ -47109,6 +47108,13 @@ function renderPDFPrintPage(url) {
 }
 
 
+$(document).on("click", ".print-button", function(e) {
+
+  $(".pdf-frame").get(0).contentWindow.print();
+
+});
+
+
 // move from the pick list pdf print page to the image upload page
 $(document).on("click", ".continue-button", function(e) {
 
@@ -47157,7 +47163,7 @@ $(document).on("click", ".image-upload-button", function(e) {
       displayPickList(order.orderNumber);
     },
     error: function() {
-      console.log("error: image upload failed");
+
     }
   });
 
@@ -47215,7 +47221,7 @@ function displayPickList(orderNumber) {
 
     },
     error: function() {
-      console.log("error getting data");
+
     }
   });
 
@@ -47233,9 +47239,6 @@ function displayPickList(orderNumber) {
     itemNumber = $(".item-search-input").val();
     var itemInfo = getItemInfo(itemNumber);
 
-    console.log(itemInfo);
-    console.log(validateAction(itemNumber, "pack"));
-
     if (validateAction(itemNumber, "pack")) {
       updatePickList(itemInfo.orderID, itemInfo.itemID, itemInfo.pickedQty + 1);
     }
@@ -47247,9 +47250,6 @@ function displayPickList(orderNumber) {
 
     itemNumber = $(".item-search-input").val();
     var itemInfo = getItemInfo(itemNumber);
-
-    console.log(itemInfo);
-    console.log(validateAction(itemNumber, "unpack"));
 
     if (validateAction(itemNumber, "unpack")) {
       updatePickList(itemInfo.orderID, itemInfo.itemID, itemInfo.pickedQty - 1);
@@ -47320,17 +47320,14 @@ function displayPickList(orderNumber) {
       method: 'PUT',
       url: `/api/picked_items/${orderID}/${itemID}/${pickedQty}`,
       success: function(json) {
-        console.log("Success updating pick list");
-        console.log(json);
         updateCachedPickList(itemID, pickedQty);
         updatePickListRow(itemID, pickedQty);
         returnFocusToItemNumber();
         displayPickStatus();
         displayPickCountToast();
       },
-      error: function() {
-        console.log("Error updating pick list");
-        console.log(json);
+      error: function(err) {
+
       }
     });
 
@@ -47455,15 +47452,14 @@ function displayPickList(orderNumber) {
         renderHomePage();
 
       },
-      error: function() {
-        console.log("error updating order");
+      error: function(err) {
+
       }
 
     });
 
   }
 
-  // asdsadfdfa
 
 }
 

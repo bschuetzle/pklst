@@ -15,6 +15,7 @@ Order Search Page
 
 .search-page-container {
   margin-top: 50px;
+  z-index: -1;
 }
 
 .order-search-label {
@@ -29,6 +30,7 @@ Order Search Page
   height: 47px;
   margin-top: 14px;
   display: inline-block;
+  z-index: 0;
 }
 
 
@@ -47,6 +49,13 @@ Print Page
   width: 100%;
 }
 
+.print-button {
+  z-index: 0
+}
+
+.continue-button {
+  z-index: 0
+}
 
 /****************
 Image Upload Page
@@ -70,6 +79,10 @@ Image Upload Page
   overflow: hidden;
   margin-bottom: 200px;
   visibility: visible;
+}
+
+.input-field {
+  z-index: 0;
 }
 
 
