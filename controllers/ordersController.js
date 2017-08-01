@@ -1,5 +1,4 @@
 var db = require('../models');
-var controllers = require('../controllers');
 const fileUpload = require('express-fileupload');
 
 
