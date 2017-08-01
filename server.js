@@ -18,10 +18,9 @@ var controllers = require('./controllers');
 // set express app
 var app = express();
 
-
 app.use(bodyParser.urlencoded({ extended: true }));
 
-
+// require express-fileupload for image uploads
 const fileUpload = require('express-fileupload');
 app.use(fileUpload());
 
@@ -38,11 +37,6 @@ app.use(express.static('public'));
 app.get('/', function homepage(req, res) {
    res.sendFile(__dirname + '/views/index.html');
 });
-
-// // temp image testing
-// app.get('/image', function homepage(req, res) {
-//    res.sendFile('/pick_images/1501602925200IMG_0048.JPG');
-// });
 
 
 /**************

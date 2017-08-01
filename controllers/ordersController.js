@@ -33,8 +33,6 @@ function update(req, res) {
 
   var orderID = req.params.order_id;
 
-  console.log("order id within controller:", orderID);
-
   db.Order.update({
       orderStatus: "picked",
     }, {
@@ -71,7 +69,7 @@ function upload(req, res) {
     moveDir = __dirname + '/../public/pick_images/'
 
     imageFile.mv(moveDir + filename, function(err) {
-      console.log('File uploaded!')
+      
     });
 
     res.send(updatedOrder)

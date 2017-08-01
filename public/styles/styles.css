@@ -41,7 +41,6 @@ Print Page
 .header-container {
   margin-top: 100px;
   text-align: center;
-  z-index: -1;
 }
 
 .iframe-container {
@@ -80,6 +79,10 @@ Image Upload Page
   overflow: hidden;
   margin-bottom: 200px;
   visibility: visible;
+}
+
+.input-field {
+  z-index: 0;
 }
 
 
