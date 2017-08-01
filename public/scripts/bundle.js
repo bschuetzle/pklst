@@ -46893,6 +46893,7 @@ $(document).ready(function() {
   console.log("document is ready (in app.js)");
 
   $('.modal').modal();
+  $('.materialboxed').materialbox();
 
   renderHomePage();
 
@@ -47015,6 +47016,7 @@ function retrievePickList(orderNumber) {
       // save/cache response data in global variable
       pickListItems = json;
       findMainProduct(json);
+      getNumberOfItems(json);
       generatePDFDoc(json);
     },
     error: function() {
@@ -47033,6 +47035,19 @@ function findMainProduct(json) {
       order.productDescription = element.description;
     }
   });
+
+}
+
+
+function getNumberOfItems(json) {
+
+  var totalOrderedQty = 0;
+
+  json.forEach(function (element) {
+    totalOrderedQty += element.orderedQty;
+  });
+
+  order.numItems = totalOrderedQty;
 
 }
 
@@ -47118,7 +47133,7 @@ $(document).on("change", ".file-picker", function(e) {
   reader.readAsDataURL(image);
 
   $(".image-upload-button").css("visibility", "visible");
-  $(".picked-items-image").css("visibility", "visible");
+  $(".picked-items-image").attr("data-caption", `Order Number: ${order.orderNumber}   -   Number of Items: ${order.numItems}`);
 
 });
 
@@ -47398,6 +47413,8 @@ function displayPickList(orderNumber) {
 
     if (pickListInfo.status == "Complete") {
       $(".order-complete-button").css("visibility", "visible");
+    } else {
+      $(".order-complete-button").css("visibility", "hidden");
     }
 
   }
