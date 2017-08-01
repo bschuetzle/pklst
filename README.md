@@ -42,6 +42,7 @@ Pick & Pack Page
 * Add auth (user signup / login) for traceability and to allow configuration specialists to make modifications if needed.
 * Add images for individual items that would appear when the operator clicks on row in the pick list.
 * Ability to navigate back to previous pages by clicking the step in the footer (with modal asking to confirm).  For example, if the user wanted to go from the Pick & Pack page back to the Upload Image page to re-take the photo.
+* Require users to enter serial number during packing if the item is serialized, for genealogy tracking.
 
 
 ## Technologies Used

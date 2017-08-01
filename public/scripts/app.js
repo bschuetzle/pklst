@@ -106,7 +106,8 @@ $(document).on("click", ".order-search-button", function(e) {
       },
       // TODO: if there was a problem with the ajax call, show an error message with the details
       error: function(err) {
-        console.log("error:", err);
+        console.log("error:");
+        console.log(err);
       }
     });
 

@@ -25,6 +25,9 @@ function find(req, res) {
     .then(order => {
       res.json(order)
     })
+    .catch(error => {
+      res.json(error)
+    })
 
 }
 
@@ -69,7 +72,7 @@ function upload(req, res) {
     moveDir = __dirname + '/../public/pick_images/'
 
     imageFile.mv(moveDir + filename, function(err) {
-      
+
     });
 
     res.send(updatedOrder)
