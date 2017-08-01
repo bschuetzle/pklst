@@ -49,6 +49,10 @@ Print Page
   width: 100%;
 }
 
+.pdf-frame {
+  margin-bottom: 200px;
+}
+
 .print-button {
   z-index: 0
 }
