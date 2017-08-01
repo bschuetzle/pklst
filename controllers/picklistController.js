@@ -1,6 +1,5 @@
 var db = require('../models');
 var conn = require('../models/db.js');
-var controllers = require('../controllers');
 
 function index(req, res) {
 

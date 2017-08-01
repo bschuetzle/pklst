@@ -350,242 +350,243 @@ function displayPickList(orderNumber) {
     }
   });
 
+}
 
-  // if the enter key is pressed when the focus is on the item number input, automatically click the pack button
-  $(document).on("keypress", ".item-search-input", function(e) {
-    if (e.keyCode==13) {
-      $(".item-pack-button").click();
+
+// if the enter key is pressed when the focus is on the item number input, automatically click the pack button
+$(document).on("keypress", ".item-search-input", function(e) {
+  if (e.keyCode==13) {
+    $(".item-pack-button").click();
+  }
+});
+
+
+$(document).on("click", ".item-pack-button", function(e) {
+
+  console.log("Pack button clicked");
+
+  itemNumber = $(".item-search-input").val();
+  var itemInfo = getItemInfo(itemNumber);
+
+  if (validateAction(itemNumber, "pack")) {
+    updatePickList(itemInfo.orderID, itemInfo.itemID, itemInfo.pickedQty + 1);
+  }
+
+});
+
+
+$(document).on("click", ".item-unpack-button", function(e) {
+
+  itemNumber = $(".item-search-input").val();
+  var itemInfo = getItemInfo(itemNumber);
+
+  if (validateAction(itemNumber, "unpack")) {
+    updatePickList(itemInfo.orderID, itemInfo.itemID, itemInfo.pickedQty - 1);
+  }
+
+});
+
+
+function getItemInfo(itemNumber) {
+
+  var itemInfo = {found: false};
+
+  pickListItems.forEach(function(element) {
+    if (element.itemNumber == itemNumber) {
+      itemInfo.found = true;
+      itemInfo.itemNumber = element.itemNumber;
+      itemInfo.orderedQty = element.orderedQty;
+      itemInfo.orderID = element.orderID;
+      itemInfo.itemID = element.itemID;
+      itemInfo.pickedQty = element.pickedQty;
     }
   });
 
+  return itemInfo;
 
-  $(document).on("click", ".item-pack-button", function(e) {
+}
 
-    console.log("Pack button clicked");
-    
-    itemNumber = $(".item-search-input").val();
-    var itemInfo = getItemInfo(itemNumber);
 
-    if (validateAction(itemNumber, "pack")) {
-      updatePickList(itemInfo.orderID, itemInfo.itemID, itemInfo.pickedQty + 1);
+function validateAction(itemNumber, action) {
+
+  if (itemNumber == "") {
+    displayErrorMsg("warning", "Oops!", `Please enter an item number.`);
+    return false;
+  }
+
+  var foundInList = false;
+  var hasError = false;
+
+  pickListItems.forEach(function(element) {
+    if (element.itemNumber == itemNumber) {
+      foundInList = true;
+      if (action == "pack" && (element.pickedQty == element.orderedQty)) {
+        displayErrorMsg("alert", "Error:", `The item '${itemNumber}' has already been fully packed - do not pack it!`);
+        hasError = true;
+      } else if (action == "unpack" && (element.pickedQty == 0)) {
+        displayErrorMsg("alert", "Error:", `The item '${itemNumber}' has not been packed yet.`);
+        hasError = true;
+      }
+    }
+  });
+
+  if (hasError) {
+    return false;
+  } else if (!foundInList) {
+    displayErrorMsg("alert", "Error:", `The item '${itemNumber}' is not part of this order.`);
+    return false;
+  } else {
+    hideErrorMsg();
+    return true;
+  }
+
+}
+
+
+function updatePickList(orderID, itemID, pickedQty) {
+
+  $.ajax({
+    method: 'PUT',
+    url: `/api/picked_items/${orderID}/${itemID}/${pickedQty}`,
+    success: function(json) {
+      updateCachedPickList(itemID, pickedQty);
+      updatePickListRow(itemID, pickedQty);
+      returnFocusToItemNumber();
+      displayPickStatus();
+      displayPickCountToast();
+    },
+    error: function(err) {
+
+    }
+  });
+
+}
+
+
+// update the picklist global variable for the item with the new picked qty
+function updateCachedPickList(itemID, pickedQty) {
+
+  pickListItems.forEach(function(element, index) {
+    if (element.itemID == itemID) {
+      pickListItems[index].pickedQty = pickedQty;
+    }
+  });
+
+}
+
+
+function updatePickListRow(itemID, pickedQty) {
+
+  var orderedQty, pickedQty;
+
+  var $rowEl = $(`.picklist-row[data-id='${itemID}']`);
+  var $iconEl = $(`.pick-status-icon[data-id='${itemID}']`);
+  var $qtyEl = $(`.picklist-item.pickedQty[data-id='${itemID}']`);
+
+  pickListItems.forEach(function(element, index) {
+    if (element.itemID == itemID) {
+      orderedQty = element.orderedQty;
+      pickedQty = element.pickedQty;
+    }
+  });
+
+  if (pickedQty == orderedQty) {
+    $iconEl.text("check_circle");
+    $iconEl.css("color", "green");
+  } else {
+    $iconEl.text("error_outline");
+    $iconEl.css("color", "red");
+  }
+
+  $qtyEl.text(pickedQty);
+
+
+}
+
+
+function returnFocusToItemNumber() {
+
+  $(".item-search-input").val("");
+  $(".item-search-input").focus();
+
+}
+
+
+function displayPickStatus() {
+
+  var totalOrderedQty = 0;
+  var totalPickedQty = 0;
+  var status;
+
+  pickListItems.forEach(function(element) {
+    totalOrderedQty += element.orderedQty;
+    totalPickedQty += element.pickedQty;
+  });
+
+  if (totalPickedQty == 0) {
+    status = "Not Started";
+    $(".pick-list-status").css("background-color", "rgb(255, 198, 179)");
+  } else if (totalPickedQty < totalOrderedQty) {
+    status = "In Progress";
+    $(".pick-list-status").css("background-color", "rgb(255, 255, 204)");
+  } else if (totalPickedQty == totalOrderedQty) {
+    status = "Complete";
+    $(".pick-list-status").css("background-color", "rgb(204, 255, 153)");
+  }
+
+  pickListInfo.totalOrderedQty = totalOrderedQty;
+  pickListInfo.totalPickedQty = totalPickedQty;
+  pickListInfo.status = status;
+
+  $(".pick-list-status").text(status);
+
+  if (pickListInfo.status == "Complete") {
+    $(".order-complete-button").css("visibility", "visible");
+  } else {
+    $(".order-complete-button").css("visibility", "hidden");
+  }
+
+}
+
+
+function displayPickCountToast() {
+
+  message = `${pickListInfo.totalPickedQty} of ${pickListInfo.totalOrderedQty} items packed`;
+  Materialize.toast(message, 4000);
+
+}
+
+
+$(document).on("click", ".order-complete-button", function(e) {
+
+  $('#modal1').modal('open');
+
+});
+
+
+$(document).on("click", ".modal-complete-button", function(e) {
+
+  completeOrder();
+
+});
+
+
+function completeOrder() {
+
+  $.ajax({
+    method: 'POST',
+    url: '/api/order_update/' + order.id,
+    success: function(json) {
+
+      renderHomePage();
+
+    },
+    error: function(err) {
+
     }
 
   });
 
-
-  $(document).on("click", ".item-unpack-button", function(e) {
-
-    itemNumber = $(".item-search-input").val();
-    var itemInfo = getItemInfo(itemNumber);
-
-    if (validateAction(itemNumber, "unpack")) {
-      updatePickList(itemInfo.orderID, itemInfo.itemID, itemInfo.pickedQty - 1);
-    }
-
-  });
-
-
-  function getItemInfo(itemNumber) {
-
-    var itemInfo = {found: false};
-
-    pickListItems.forEach(function(element) {
-      if (element.itemNumber == itemNumber) {
-        itemInfo.found = true;
-        itemInfo.itemNumber = element.itemNumber;
-        itemInfo.orderedQty = element.orderedQty;
-        itemInfo.orderID = element.orderID;
-        itemInfo.itemID = element.itemID;
-        itemInfo.pickedQty = element.pickedQty;
-      }
-    });
-
-    return itemInfo;
-
-  }
-
-
-  function validateAction(itemNumber, action) {
-
-    if (itemNumber == "") {
-      displayErrorMsg("warning", "Oops!", `Please enter an item number.`);
-      return false;
-    }
-
-    var foundInList = false;
-    var hasError = false;
-
-    pickListItems.forEach(function(element) {
-      if (element.itemNumber == itemNumber) {
-        foundInList = true;
-        if (action == "pack" && (element.pickedQty == element.orderedQty)) {
-          displayErrorMsg("alert", "Error:", `The item '${itemNumber}' has already been fully packed - do not pack it!`);
-          hasError = true;
-        } else if (action == "unpack" && (element.pickedQty == 0)) {
-          displayErrorMsg("alert", "Error:", `The item '${itemNumber}' has not been packed yet.`);
-          hasError = true;
-        }
-      }
-    });
-
-    if (hasError) {
-      return false;
-    } else if (!foundInList) {
-      displayErrorMsg("alert", "Error:", `The item '${itemNumber}' is not part of this order.`);
-      return false;
-    } else {
-      hideErrorMsg();
-      return true;
-    }
-
-  }
-
-
-  function updatePickList(orderID, itemID, pickedQty) {
-
-    $.ajax({
-      method: 'PUT',
-      url: `/api/picked_items/${orderID}/${itemID}/${pickedQty}`,
-      success: function(json) {
-        updateCachedPickList(itemID, pickedQty);
-        updatePickListRow(itemID, pickedQty);
-        returnFocusToItemNumber();
-        displayPickStatus();
-        displayPickCountToast();
-      },
-      error: function(err) {
-
-      }
-    });
-
-  }
-
-
-  // update the picklist global variable for the item with the new picked qty
-  function updateCachedPickList(itemID, pickedQty) {
-
-    pickListItems.forEach(function(element, index) {
-      if (element.itemID == itemID) {
-        pickListItems[index].pickedQty = pickedQty;
-      }
-    });
-
-  }
-
-
-  function updatePickListRow(itemID, pickedQty) {
-
-    var orderedQty, pickedQty;
-
-    var $rowEl = $(`.picklist-row[data-id='${itemID}']`);
-    var $iconEl = $(`.pick-status-icon[data-id='${itemID}']`);
-    var $qtyEl = $(`.picklist-item.pickedQty[data-id='${itemID}']`);
-
-    pickListItems.forEach(function(element, index) {
-      if (element.itemID == itemID) {
-        orderedQty = element.orderedQty;
-        pickedQty = element.pickedQty;
-      }
-    });
-
-    if (pickedQty == orderedQty) {
-      $iconEl.text("check_circle");
-      $iconEl.css("color", "green");
-    } else {
-      $iconEl.text("error_outline");
-      $iconEl.css("color", "red");
-    }
-
-    $qtyEl.text(pickedQty);
-
-
-  }
-
-
-  function returnFocusToItemNumber() {
-
-    $(".item-search-input").val("");
-    $(".item-search-input").focus();
-
-  }
-
-
-  function displayPickStatus() {
-
-    var totalOrderedQty = 0;
-    var totalPickedQty = 0;
-    var status;
-
-    pickListItems.forEach(function(element) {
-      totalOrderedQty += element.orderedQty;
-      totalPickedQty += element.pickedQty;
-    });
-
-    if (totalPickedQty == 0) {
-      status = "Not Started";
-      $(".pick-list-status").css("background-color", "rgb(255, 198, 179)");
-    } else if (totalPickedQty < totalOrderedQty) {
-      status = "In Progress";
-      $(".pick-list-status").css("background-color", "rgb(255, 255, 204)");
-    } else if (totalPickedQty == totalOrderedQty) {
-      status = "Complete";
-      $(".pick-list-status").css("background-color", "rgb(204, 255, 153)");
-    }
-
-    pickListInfo.totalOrderedQty = totalOrderedQty;
-    pickListInfo.totalPickedQty = totalPickedQty;
-    pickListInfo.status = status;
-
-    $(".pick-list-status").text(status);
-
-    if (pickListInfo.status == "Complete") {
-      $(".order-complete-button").css("visibility", "visible");
-    } else {
-      $(".order-complete-button").css("visibility", "hidden");
-    }
-
-  }
-
-
-  function displayPickCountToast() {
-
-    message = `${pickListInfo.totalPickedQty} of ${pickListInfo.totalOrderedQty} items packed`;
-    Materialize.toast(message, 4000);
-
-  }
-
-
-  $(document).on("click", ".order-complete-button", function(e) {
-
-    $('#modal1').modal('open');
-
-  });
-
-
-  $(document).on("click", ".modal-complete-button", function(e) {
-
-    completeOrder();
-
-  });
-
-
-  function completeOrder() {
-
-    $.ajax({
-      method: 'POST',
-      url: '/api/order_update/' + order.id,
-      success: function(json) {
-
-        renderHomePage();
-
-      },
-      error: function(err) {
-
-      }
-
-    });
-
-  }
 
 
 }
