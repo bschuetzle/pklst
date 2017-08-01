@@ -234,6 +234,13 @@ function renderPDFPrintPage(url) {
 }
 
 
+$(document).on("click", ".print-button", function(e) {
+
+  $(".pdf-frame").get(0).contentWindow.print();
+
+});
+
+
 // move from the pick list pdf print page to the image upload page
 $(document).on("click", ".continue-button", function(e) {
 
