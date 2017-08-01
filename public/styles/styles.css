@@ -15,6 +15,7 @@ Order Search Page
 
 .search-page-container {
   margin-top: 50px;
+  z-index: -1;
 }
 
 .order-search-label {
@@ -29,6 +30,7 @@ Order Search Page
   height: 47px;
   margin-top: 14px;
   display: inline-block;
+  z-index: 0;
 }
 
 
@@ -39,6 +41,7 @@ Print Page
 .header-container {
   margin-top: 100px;
   text-align: center;
+  z-index: -1;
 }
 
 .iframe-container {
@@ -47,6 +50,13 @@ Print Page
   width: 100%;
 }
 
+.print-button {
+  z-index: 0
+}
+
+.continue-button {
+  z-index: 0
+}
 
 /****************
 Image Upload Page
